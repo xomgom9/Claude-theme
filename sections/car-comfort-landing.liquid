@@ -1,6 +1,6 @@
 {% liquid
   assign offer_product = section.settings.product
-  if offer_product == blank
+  if offer_product == blank and request.page_type == 'product'
     assign offer_product = product
   endif
   assign selected_variant = offer_product.selected_or_first_available_variant
@@ -76,7 +76,7 @@
     <section class="cc-hero">
       <div class="cc-hero-media">
         {% if section.settings.hero_image != blank %}
-          {{ section.settings.hero_image | image_url: width: 2400 | image_tag: widths: '750, 1200, 1600, 2000, 2400', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: section.settings.hero_image.alt }}
+          {{ section.settings.hero_image | image_url: width: 2000 | image_tag: widths: '480, 750, 1200, 1600, 2000', sizes: '100vw', loading: 'eager', fetchpriority: 'high', decoding: 'async', alt: section.settings.hero_image.alt }}
         {% else %}
           <img
             src="{{ 'background-hero-banner.png' | asset_url }}"
@@ -84,6 +84,7 @@
             height="848"
             loading="eager"
             fetchpriority="high"
+            decoding="async"
             alt="{{ section.settings.hero_heading | escape }}"
           >
         {% endif %}
@@ -193,7 +194,7 @@
             {% if offer_product.media.size > 0 %}
               {% for media in offer_product.media %}
                 <button type="button" class="cc-product-thumbnail{% if media.id == selected_variant.featured_media.id or selected_variant.featured_media == blank and forloop.first %} is-active{% endif %}" data-media-target="media-{{ media.id }}" role="tab" aria-selected="{% if media.id == selected_variant.featured_media.id or selected_variant.featured_media == blank and forloop.first %}true{% else %}false{% endif %}" aria-label="View {{ media.media_type }} {{ forloop.index }}">
-                  {{ media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: media.alt }}
+                  {{ media.preview_image | image_url: width: 160 | image_tag: widths: '80, 120, 160', sizes: '80px', loading: 'lazy', decoding: 'async', alt: media.alt }}
                   {% if media.media_type == 'video' or media.media_type == 'external_video' %}<span class="cc-product-play" aria-hidden="true">▶</span>{% endif %}
                 </button>
               {% endfor %}
@@ -206,13 +207,17 @@
                 <div class="cc-product-media{% if media.id == selected_variant.featured_media.id or selected_variant.featured_media == blank and forloop.first %} is-active{% endif %}" data-media-id="media-{{ media.id }}" data-media-type="{{ media.media_type }}">
                   {% case media.media_type %}
                     {% when 'image' %}
-                      {{ media | image_url: width: 1800 | image_tag: widths: '480, 720, 960, 1200, 1600, 1800', sizes: '(min-width: 990px) 42vw, 100vw', loading: 'eager', alt: media.alt }}
+                      {% if media.id == selected_variant.featured_media.id or selected_variant.featured_media == blank and forloop.first %}
+                        {{ media | image_url: width: 1600 | image_tag: widths: '360, 540, 720, 960, 1200, 1600', sizes: '(min-width: 990px) 42vw, 100vw', loading: 'eager', fetchpriority: 'high', decoding: 'async', alt: media.alt }}
+                      {% else %}
+                        {{ media | image_url: width: 1600 | image_tag: widths: '360, 540, 720, 960, 1200, 1600', sizes: '(min-width: 990px) 42vw, 100vw', loading: 'lazy', fetchpriority: 'low', decoding: 'async', alt: media.alt }}
+                      {% endif %}
                     {% when 'video' %}
                       {{ media | video_tag: controls: true, playsinline: true, preload: 'metadata', image_size: '1200x' }}
                     {% when 'external_video' %}
                       {{ media | external_video_tag }}
                     {% else %}
-                      {{ media.preview_image | image_url: width: 1600 | image_tag: loading: 'lazy', alt: media.alt }}
+                      {{ media.preview_image | image_url: width: 1600 | image_tag: widths: '360, 720, 960, 1200, 1600', sizes: '(min-width: 990px) 42vw, 100vw', loading: 'lazy', decoding: 'async', alt: media.alt }}
                   {% endcase %}
                 </div>
               {% endfor %}
@@ -282,7 +287,7 @@
 
                 <div class="cc-product-actions">
                   <button class="cc-product-add" type="submit" name="add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</button>
-                  <button class="cc-product-buy-now" type="submit" name="checkout" data-buy-button{% unless selected_variant.available %} disabled{% endunless %}>{% if selected_variant.available %}Buy Now{% else %}Sold Out{% endif %}</button>
+                  <button class="cc-product-buy-now" type="submit" name="return_to" value="/checkout" data-buy-button{% unless selected_variant.available %} disabled{% endunless %}>{% if selected_variant.available %}Buy Now{% else %}Sold Out{% endif %}</button>
                 </div>
                 <div class="cc-product-payment-methods">
                   <span>Secure payment methods</span>
@@ -295,13 +300,13 @@
                 </div>
               {% endform %}
             {% else %}
-              <p class="cc-product-empty">Select a product in Theme Editor.</p>
+              <p class="cc-product-empty">Select an Active product published to the Online Store channel in Theme Editor.</p>
             {% endif %}
           </div>
         </div>
       </div>
 
-      {% if offer_product != blank and section.settings.show_sticky_mobile %}<div class="cc-product-sticky"><button type="submit" name="add" form="{{ product_form_id }}" class="cc-product-add">Add to Cart</button><button type="submit" name="checkout" form="{{ product_form_id }}" class="cc-product-buy-now">Buy Now</button></div>{% endif %}
+      {% if offer_product != blank and section.settings.show_sticky_mobile %}<div class="cc-product-sticky"><button type="submit" name="add" form="{{ product_form_id }}" class="cc-product-add">Add to Cart</button><button type="submit" name="return_to" value="/checkout" form="{{ product_form_id }}" class="cc-product-buy-now">Buy Now</button></div>{% endif %}
       <dialog class="cc-product-lightbox"><button type="button" aria-label="Close image viewer">×</button><div></div></dialog>
       {% if offer_product != blank %}<script type="application/json" data-product-variants>{{ offer_product.variants | json }}</script>{% endif %}
     </section>
@@ -574,7 +579,12 @@
     section.dataset.productReady = 'true';
 
     const variantsNode = section.querySelector('[data-product-variants]');
-    const variants = variantsNode ? JSON.parse(variantsNode.textContent) : [];
+    let variants = [];
+    try {
+      variants = variantsNode ? JSON.parse(variantsNode.textContent) : [];
+    } catch (error) {
+      console.error('Unable to load product variants', error);
+    }
     const optionGroups = [...section.querySelectorAll('[data-option-position]')];
     const variantIdInput = section.querySelector('[data-variant-id]');
     const currentPrice = section.querySelector('[data-current-price]');

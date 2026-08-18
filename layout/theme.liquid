@@ -6,13 +6,7 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
-    {%- if settings.favicon != blank -%}
-      <link
-        rel="icon"
-        type="image/png"
-        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
-      >
-    {%- endif -%}
+    <link rel="icon" type="image/png" href="{{ 'favicon.png' | asset_url }}">
 
     {% # theme-check-disable RemoteAsset %}
     {% comment %} This a way to wait for main content to load when navigating to a new page so that the view transitions can work consistently {% endcomment %}
@@ -42,9 +36,11 @@
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
-    <div id="header-group">
-      {% sections 'header-group' %}
-    </div>
+    {% unless request.page_type == 'index' or template.suffix == 'car-comfort' %}
+      <div id="header-group">
+        {% sections 'header-group' %}
+      </div>
+    {% endunless %}
 
     <script>
       // Inline header height and menu style calculations to prevent layout shift
@@ -125,9 +121,11 @@
       {{ content_for_layout }}
     </main>
 
-    <footer>
-      {% sections 'footer-group' %}
-    </footer>
+    {% unless request.page_type == 'index' or template.suffix == 'car-comfort' %}
+      <footer>
+        {% sections 'footer-group' %}
+      </footer>
+    {% endunless %}
 
     {% render 'search-modal' %}
 

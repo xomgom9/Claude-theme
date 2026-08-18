@@ -1,0 +1,13 @@
+/*
+ * Dedicated landing page template. Assign this template to a Shopify Page.
+ * Content is intentionally isolated from config/settings_data.json.
+ */
+{
+  "sections": {
+    "main": {
+      "type": "car-comfort-landing",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

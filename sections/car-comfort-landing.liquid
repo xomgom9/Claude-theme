@@ -1,0 +1,2345 @@
+{% liquid
+  assign offer_product = section.settings.product
+  if offer_product == blank
+    assign offer_product = product
+  endif
+  assign selected_variant = offer_product.selected_or_first_available_variant
+  assign product_image = offer_product.featured_image
+  assign product_form_id = 'cc-product-form-' | append: section.id
+  assign product_rating = section.settings.rating_score
+  assign product_review_count = section.settings.review_count
+  assign product_sold_count = section.settings.sold_count
+  assign product_rating_percent = product_rating | times: 20
+%}
+
+<div class="cc-landing" id="top">
+  <div class="cc-page-progress" aria-hidden="true"><span data-cc-page-progress></span></div>
+  <div class="cc-announcement" role="region" aria-label="Special offers">
+    <div class="cc-marquee">
+      <span>30% OFF BUNDLES</span><span>30-Day Money-Back Guarantee</span><span>24/7 Quality Customer Service</span><span>Powered by Real Users</span>
+    </div>
+  </div>
+
+  <header class="cc-header">
+    <a class="cc-logo" href="#top" aria-label="{{ section.settings.brand_name | escape }} home">
+      <img
+        class="cc-logo-image"
+        src="{{ 'logo.png' | asset_url }}"
+        width="2048"
+        height="768"
+        loading="eager"
+        alt="{{ section.settings.brand_name | escape }}"
+      >
+    </a>
+    <button class="cc-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="cc-mobile-menu-{{ section.id }}" data-cc-menu-open>
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="cc-nav" aria-label="Landing page navigation">
+      <a href="#special-offer">SPECIAL OFFER</a><a href="#guarantees">GUARANTEES</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="cc-header-actions">
+      <a class="cc-header-icon" href="{{ routes.account_url }}" aria-label="Track your order in your Shopify account">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z"></path>
+          <circle cx="7" cy="18" r="2"></circle>
+          <circle cx="18" cy="18" r="2"></circle>
+        </svg>
+      </a>
+      <a class="cc-header-icon" href="{{ routes.cart_url }}" aria-label="View cart">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 4h2l2.1 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20 8H7"></path>
+          <circle cx="10" cy="20" r="1.5"></circle>
+          <circle cx="17" cy="20" r="1.5"></circle>
+        </svg>
+      </a>
+      <a class="cc-button cc-header-cta" href="#special-offer">SHOP NOW</a>
+    </div>
+    <div class="cc-menu-overlay" data-cc-menu-overlay></div>
+    <aside class="cc-mobile-menu" id="cc-mobile-menu-{{ section.id }}" aria-hidden="true" data-cc-mobile-menu>
+      <div class="cc-mobile-menu-head">
+        <span>MENU</span>
+        <button type="button" aria-label="Close menu" data-cc-menu-close>&times;</button>
+      </div>
+      <nav aria-label="Mobile navigation">
+        <a href="#special-offer">SPECIAL OFFER</a>
+        <a href="#guarantees">GUARANTEES</a>
+        <a href="#faq">FAQ</a>
+        <a href="{{ routes.account_url }}">TRACK ORDER</a>
+        <a href="{{ routes.cart_url }}">CART</a>
+      </nav>
+      <a class="cc-button cc-mobile-shop" href="#special-offer">SHOP NOW</a>
+    </aside>
+  </header>
+
+  <div class="cc-main">
+    <section class="cc-hero">
+      <div class="cc-hero-media">
+        {% if section.settings.hero_image != blank %}
+          {{ section.settings.hero_image | image_url: width: 2400 | image_tag: widths: '750, 1200, 1600, 2000, 2400', sizes: '100vw', loading: 'eager', fetchpriority: 'high', alt: section.settings.hero_image.alt }}
+        {% else %}
+          <img
+            src="{{ 'background-hero-banner.png' | asset_url }}"
+            width="1854"
+            height="848"
+            loading="eager"
+            fetchpriority="high"
+            alt="{{ section.settings.hero_heading | escape }}"
+          >
+        {% endif %}
+      </div>
+      <div class="cc-hero-overlay"></div>
+      <div class="cc-wrap cc-hero-content">
+        <div class="cc-hero-card">
+          <p class="cc-hero-pill">Car Neck Support Pillow</p>
+          <h1>Gentle Neck Support Mile After Mile</h1>
+          <p class="cc-hero-description">Enjoy softer, steadier support on every drive with a contoured pillow designed to cradle your neck in cloud-soft comfort.</p>
+          <div class="cc-hero-benefits" aria-label="Product benefits">
+            <div class="cc-hero-benefit"><span aria-hidden="true">⌒</span><strong>Neck-Cradling Design</strong></div>
+            <div class="cc-hero-benefit"><span aria-hidden="true">◇</span><strong>Cloud-Soft Memory Foam</strong></div>
+          </div>
+          <a class="cc-button cc-hero-cta" href="#special-offer"><span>Buy Now · Save 50%</span><span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-section cc-wrap" aria-labelledby="pain-title">
+      <div class="cc-heading"><p class="cc-eyebrow">THE DAILY DRIVE</p><h2 id="pain-title">Still Feeling Sore After Driving?</h2><p>Long hours behind the wheel can leave your neck, shoulders, and back feeling worn out.</p></div>
+      <div class="cc-pain-grid">
+        <article class="cc-media-card">
+          <div class="cc-card-media">{% if section.settings.pain_image_1 != blank %}{{ section.settings.pain_image_1 | image_url: width: 900 | image_tag: widths: '400, 700, 900', loading: 'lazy', alt: section.settings.pain_image_1.alt }}{% else %}<img src="{{ 'shoulder-back-strain.jpg' | asset_url }}" width="900" height="600" loading="lazy" alt="Driver experiencing shoulder and back strain">{% endif %}</div>
+          <div class="cc-card-copy"><span class="cc-icon"><img src="{{ 'shoulder-back-strain.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><h3>Shoulder &amp; Back Strain</h3><p>Tension builds up during long hours behind the wheel.</p></div>
+        </article>
+        <article class="cc-media-card">
+          <div class="cc-card-media">{% if section.settings.pain_image_2 != blank %}{{ section.settings.pain_image_2 | image_url: width: 900 | image_tag: widths: '400, 700, 900', loading: 'lazy', alt: section.settings.pain_image_2.alt }}{% else %}<img src="{{ 'neck-pain-stiffness.jpg' | asset_url }}" width="900" height="600" loading="lazy" alt="Driver experiencing neck pain and stiffness">{% endif %}</div>
+          <div class="cc-card-copy"><span class="cc-icon"><img src="{{ 'neck-pain-stiffness.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><h3>Neck Pain &amp; Stiffness</h3><p>Lack of support puts extra strain on your neck.</p></div>
+        </article>
+        <article class="cc-video-card">
+          {% if section.settings.pain_video != blank %}
+            {{ section.settings.pain_video | video_tag: autoplay: true, controls: false, muted: true, loop: true, playsinline: true, preload: 'metadata', image_size: '1200x', class: 'cc-pain-hover-video' }}
+          {% elsif section.settings.video_cover != blank %}
+            {{ section.settings.video_cover | image_url: width: 1200 | image_tag: widths: '600, 900, 1200', loading: 'lazy', alt: section.settings.video_cover.alt }}
+          {% else %}
+            <video class="cc-pain-hover-video" autoplay muted loop playsinline preload="metadata" aria-label="Still Feeling Sore After Driving video">
+              <source src="{{ 'video Still Feeling Sore After Driving.mp4' | asset_url }}" type="video/mp4">
+            </video>
+          {% endif %}
+        </article>
+      </div>
+    </section>
+
+    <section class="cc-section cc-soft">
+      <div class="cc-wrap">
+        <div class="cc-heading"><p class="cc-eyebrow">360° COMFORT</p><h2>Soft Support From Every Angle</h2><p>3D contouring fills the gap behind your neck, cradling both sides for steady, balanced support.</p></div>
+        <div class="cc-contour">
+          <div class="cc-callouts"><div><b>Ergonomic 3D Contour</b><span>Cradles your neck and supports both sides.</span><span class="cc-meter" role="progressbar" aria-label="Ergonomic contour" aria-valuemin="0" aria-valuemax="100" aria-valuenow="94"><i style="--cc-progress:94%"></i></span></div><div><b>Premium Memory Foam</b><span>Slow rebound adapts gently to your shape.</span><span class="cc-meter" role="progressbar" aria-label="Memory foam comfort" aria-valuemin="0" aria-valuemax="100" aria-valuenow="92"><i style="--cc-progress:92%"></i></span></div></div>
+          <div class="cc-product-stage">{% if section.settings.contour_image != blank %}{{ section.settings.contour_image | image_url: width: 1400 | image_tag: widths: '600, 900, 1200, 1400', loading: 'lazy', alt: section.settings.contour_image.alt }}{% elsif product_image != blank %}{{ product_image | image_url: width: 1400 | image_tag: widths: '600, 900, 1200, 1400', loading: 'lazy', alt: offer_product.title }}{% else %}<img src="{{ 'variant product 7.jpeg' | asset_url }}" width="800" height="800" loading="lazy" alt="Black neck pillow and lumbar support set">{% endif %}</div>
+          <div class="cc-callouts cc-callouts-right"><div><b>Lumbar Support Curve</b><span>Supports the natural curve of your lower back.</span><span class="cc-meter" role="progressbar" aria-label="Lumbar support" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"><i style="--cc-progress:90%"></i></span></div><div><b>Adjustable Straps</b><span>Helps keep the cushion securely in place.</span><span class="cc-meter" role="progressbar" aria-label="Strap adjustability" aria-valuemin="0" aria-valuemax="100" aria-valuenow="96"><i style="--cc-progress:96%"></i></span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-lifestyle">
+      <div class="cc-lifestyle-media">{% if section.settings.comfort_image != blank %}{{ section.settings.comfort_image | image_url: width: 2400 | image_tag: widths: '750, 1200, 1800, 2400', sizes: '100vw', loading: 'lazy', alt: section.settings.comfort_image.alt }}{% elsif product_image != blank %}{{ product_image | image_url: width: 1800 | image_tag: widths: '750, 1200, 1800', loading: 'lazy', alt: offer_product.title }}{% else %}{{ 'lifestyle-1' | placeholder_svg_tag: 'cc-placeholder' }}{% endif %}</div>
+      <div class="cc-wrap cc-lifestyle-copy"><p class="cc-eyebrow">BLACK • GRAY • BROWN</p><h2>Comfort For Every Drive</h2><p>Timeless colors designed to feel at home in every interior.</p></div>
+    </section>
+
+    <section class="cc-section cc-wrap cc-care">
+      <div><p class="cc-eyebrow">MADE FOR REAL LIFE</p><h2>Effortless Care For Every Drive</h2><p>Simply remove and wash the cover for easy, hassle-free everyday care.</p><div class="cc-feature"><span class="cc-icon"><img src="{{ 'quick-release-cover.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><div><h3>Quick-Release Cover</h3><p>Unzip and remove the cover easily whenever it needs a clean.</p></div></div><div class="cc-feature"><span class="cc-icon"><img src="{{ 'easy-machine-washing.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><div><h3>Easy Machine Washing</h3><p>Toss it in the washer to remove sweat and odors and refresh its comfort.</p></div></div></div>
+      <div class="cc-care-media">{% if section.settings.care_image != blank %}{{ section.settings.care_image | image_url: width: 1400 | image_tag: widths: '600, 900, 1200, 1400', loading: 'lazy', alt: section.settings.care_image.alt }}{% else %}{{ 'product-2' | placeholder_svg_tag: 'cc-placeholder' }}{% endif %}</div>
+    </section>
+
+    <section class="cc-section cc-inline-instant">
+      <div class="cc-wrap">
+        <div class="cc-heading"><h2>Instant Comfort, Every Drive</h2><p>Adaptive bounce and soft cushioning for every mile.</p></div>
+        <div class="cc-inline-instant-grid">
+          <article>
+            <div class="cc-inline-instant-media">
+              {% if section.settings.material_image_1 != blank %}{{ section.settings.material_image_1 | image_url: width: 1400 | image_tag: loading: 'lazy', alt: section.settings.material_image_1.alt }}{% else %}<img src="{{ 'adaptive-rebound.jpg' | asset_url }}" width="1200" height="900" loading="lazy" alt="Memory foam demonstrating adaptive rebound">{% endif %}
+            </div>
+            <h3>Adaptive Rebound</h3><p>High-density foam provides responsive, long-lasting support.</p>
+          </article>
+          <article>
+            <div class="cc-inline-instant-media">
+              {% if section.settings.material_image_2 != blank %}{{ section.settings.material_image_2 | image_url: width: 1400 | image_tag: loading: 'lazy', alt: section.settings.material_image_2.alt }}{% else %}<img src="{{ 'cloud-soft-plushness.jpg' | asset_url }}" width="1200" height="900" loading="lazy" alt="Close view of cloud-soft memory foam">{% endif %}
+            </div>
+            <h3>Cloud-Soft Plushness</h3><p>Plush memory foam delivers gentle, pressure-free comfort.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-section cc-wrap cc-specs">
+      <div><p class="cc-eyebrow">PRODUCT DETAILS</p><h2>Made For Everyday Comfort</h2><dl><div><dt>Product Name</dt><dd>{{ offer_product.title | default: 'Ergonomic Car Neck & Lumbar Support Set' }}</dd></div><div><dt>Cover Material</dt><dd>Soft, breathable removable cover</dd></div><div><dt>Filling Material</dt><dd>High-density memory foam</dd></div><div><dt>Attachment Type</dt><dd>Adjustable elastic straps</dd></div><div><dt>Dimensions</dt><dd>See selected variant</dd></div><div><dt>Care Instructions</dt><dd>Remove cover and machine wash; air dry</dd></div></dl></div>
+      <div class="cc-spec-image">{% if section.settings.spec_image != blank %}{{ section.settings.spec_image | image_url: width: 1400 | image_tag: widths: '600, 900, 1200, 1400', loading: 'lazy', alt: section.settings.spec_image.alt }}{% else %}<img src="{{ 'product-information.jpeg' | asset_url }}" width="800" height="800" loading="lazy" alt="Neck pillow and lumbar support dimensions">{% endif %}</div>
+    </section>
+
+    <div class="cc-promo" role="region" aria-label="Current promotions">
+      <div class="cc-promo-track">
+        <div class="cc-promo-group">
+          <span>🔥 SAVE 30% ON BUNDLES</span><span>FREE SHIPPING OFFER</span><span>30-DAY GUARANTEE</span><span>🔥 SAVE 30% ON BUNDLES</span><span>FREE SHIPPING OFFER</span><span>30-DAY GUARANTEE</span><span>🔥 SAVE 30% ON BUNDLES</span><span>FREE SHIPPING OFFER</span><span>30-DAY GUARANTEE</span>
+        </div>
+        <div class="cc-promo-group" aria-hidden="true">
+          <span>🔥 SAVE 30% ON BUNDLES</span><span>FREE SHIPPING OFFER</span><span>30-DAY GUARANTEE</span><span>🔥 SAVE 30% ON BUNDLES</span><span>FREE SHIPPING OFFER</span><span>30-DAY GUARANTEE</span><span>🔥 SAVE 30% ON BUNDLES</span><span>FREE SHIPPING OFFER</span><span>30-DAY GUARANTEE</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="cc-product-section" id="cc-product-{{ section.id }}" aria-labelledby="cc-product-title-{{ section.id }}">
+      <span id="special-offer" class="cc-product-anchor" aria-hidden="true"></span>
+      <div class="cc-product-layout">
+        <div class="cc-product-gallery{% if offer_product.media.size == 0 %} no-media{% endif %}" data-product-gallery>
+          <div class="cc-product-thumbnails" role="tablist" aria-label="Product media">
+            {% if offer_product.media.size > 0 %}
+              {% for media in offer_product.media %}
+                <button type="button" class="cc-product-thumbnail{% if media.id == selected_variant.featured_media.id or selected_variant.featured_media == blank and forloop.first %} is-active{% endif %}" data-media-target="media-{{ media.id }}" role="tab" aria-selected="{% if media.id == selected_variant.featured_media.id or selected_variant.featured_media == blank and forloop.first %}true{% else %}false{% endif %}" aria-label="View {{ media.media_type }} {{ forloop.index }}">
+                  {{ media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: media.alt }}
+                  {% if media.media_type == 'video' or media.media_type == 'external_video' %}<span class="cc-product-play" aria-hidden="true">▶</span>{% endif %}
+                </button>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="cc-product-media-stage" tabindex="0" aria-label="Selected product media">
+            {% if offer_product.media.size > 0 %}
+              {% for media in offer_product.media %}
+                <div class="cc-product-media{% if media.id == selected_variant.featured_media.id or selected_variant.featured_media == blank and forloop.first %} is-active{% endif %}" data-media-id="media-{{ media.id }}" data-media-type="{{ media.media_type }}">
+                  {% case media.media_type %}
+                    {% when 'image' %}
+                      {{ media | image_url: width: 1800 | image_tag: widths: '480, 720, 960, 1200, 1600, 1800', sizes: '(min-width: 990px) 42vw, 100vw', loading: 'eager', alt: media.alt }}
+                    {% when 'video' %}
+                      {{ media | video_tag: controls: true, playsinline: true, preload: 'metadata', image_size: '1200x' }}
+                    {% when 'external_video' %}
+                      {{ media | external_video_tag }}
+                    {% else %}
+                      {{ media.preview_image | image_url: width: 1600 | image_tag: loading: 'lazy', alt: media.alt }}
+                  {% endcase %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="cc-product-media is-active cc-product-media-empty" data-media-id="empty" data-media-type="empty">{{ 'product-1' | placeholder_svg_tag }}<p>Add product media in Shopify admin.</p></div>
+            {% endif %}
+            <button type="button" class="cc-product-zoom" aria-label="Open larger product image">⌕</button>
+            <span class="cc-product-counter" aria-live="polite">1/1</span>
+          </div>
+        </div>
+
+        <div class="cc-product-info">
+          <div class="cc-product-heading">
+            <h2 id="cc-product-title-{{ section.id }}">{% if offer_product != blank %}{{ offer_product.title | escape }}{% else %}Select a Shopify product in Theme Editor{% endif %}</h2>
+            {% if offer_product != blank and section.settings.show_reviews and product_rating != blank or offer_product != blank and section.settings.show_sold_count and product_sold_count != blank %}
+              <div class="cc-product-rating">
+                {% if section.settings.show_reviews and product_rating != blank %}<span class="cc-product-stars" style="--rating-width: {{ product_rating_percent }}%" role="img" aria-label="{{ product_rating }} out of 5 stars"><span aria-hidden="true">★★★★★</span></span><strong>{{ product_rating }}</strong>{% if product_review_count != blank %}<span class="cc-product-separator">|</span><a href="#reviews">{{ product_review_count }} Reviews</a>{% endif %}{% endif %}
+                {% if section.settings.show_sold_count and product_sold_count != blank %}<span class="cc-product-separator">|</span><span class="cc-product-sold">{{ product_sold_count }} sold</span>{% endif %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="cc-product-purchase">
+            {% if section.settings.show_promotion %}
+              <div class="cc-product-promo-head"><strong>{{ section.settings.promotion_title }}</strong>{% if section.settings.show_countdown %}<span>{{ section.settings.promotion_end }} · <b data-product-countdown data-hours="{{ section.settings.countdown_hours }}">00:00:00</b></span>{% endif %}</div>
+            {% endif %}
+            <div class="cc-product-price-box{% unless section.settings.show_promotion %} no-promo{% endunless %}">
+              {% if selected_variant != blank %}
+                <div class="cc-product-price-row"><span class="cc-product-current-price" data-current-price>{{ selected_variant.price | money }}</span><span class="cc-product-save{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-save-badge>Save <span data-save-amount>{{ selected_variant.compare_at_price | minus: selected_variant.price | money }}</span></span></div>
+                <s class="cc-product-old-price{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-old-price>{{ selected_variant.compare_at_price | money }}</s>
+              {% else %}
+                <p class="cc-product-empty">Select a Shopify product to display its price.</p>
+              {% endif %}
+              <p class="cc-product-extra">{{ section.settings.extra_offer }}</p>
+            </div>
+
+            {% if section.settings.show_coupon %}
+              <details class="cc-product-coupon"><summary><span aria-hidden="true">%</span><strong>{{ section.settings.coupon_label }}</strong><span aria-hidden="true">⌄</span></summary><div>{{ section.settings.coupon_details }}</div></details>
+            {% endif %}
+
+            <div class="cc-product-divider"></div>
+
+            {% if offer_product != blank %}
+              {% form 'product', offer_product, id: product_form_id, class: 'cc-product-form-new' %}
+                <input type="hidden" name="id" value="{{ selected_variant.id }}" data-variant-id>
+                {% for option in offer_product.options_with_values %}
+                  <fieldset class="cc-product-option" data-option-position="{{ option.position }}">
+                    <legend>{{ option.name }}: <strong data-selected-option>{{ option.selected_value }}</strong></legend>
+                    <div class="cc-product-option-values">
+                      {% for value in option.values %}
+                        <button type="button" class="cc-product-option-value{% if value.selected %} is-selected{% endif %}{% unless value.available %} is-unavailable{% endunless %}" data-option-value="{{ value | escape }}" aria-pressed="{% if value.selected %}true{% else %}false{% endif %}"{% unless value.available %} disabled{% endunless %}>
+                          {% if section.settings.show_variant_thumbnails and option.position == 1 %}
+                            {% assign value_variant = value.variant %}
+                            {% if value_variant.featured_image != blank %}{{ value_variant.featured_image | image_url: width: 140 | image_tag: loading: 'lazy', alt: value }}{% endif %}
+                          {% endif %}
+                          <span>{{ value }}</span>
+                        </button>
+                      {% endfor %}
+                    </div>
+                  </fieldset>
+                {% endfor %}
+
+                <div class="cc-product-stock" data-stock><span></span>{% if selected_variant.available %}In stock{% else %}Sold out{% endif %}</div>
+                {% if section.settings.show_quantity %}
+                  <div class="cc-product-quantity-wrap"><label for="cc-quantity-{{ section.id }}">Quantity</label><div class="cc-product-quantity"><button type="button" data-quantity-minus aria-label="Decrease quantity">−</button><input id="cc-quantity-{{ section.id }}" type="number" name="quantity" value="1" min="1" inputmode="numeric"><button type="button" data-quantity-plus aria-label="Increase quantity">+</button></div></div>
+                {% else %}<input type="hidden" name="quantity" value="1">{% endif %}
+
+                <div class="cc-product-actions">
+                  <button class="cc-product-add" type="submit" name="add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</button>
+                  <button class="cc-product-buy-now" type="submit" name="checkout" data-buy-button{% unless selected_variant.available %} disabled{% endunless %}>{% if selected_variant.available %}Buy Now{% else %}Sold Out{% endif %}</button>
+                </div>
+                <div class="cc-product-payment-methods">
+                  <span>Secure payment methods</span>
+                  <img src="{{ 'visa-mastercard-amex-paypal.jpg' | asset_url }}" width="2570" height="197" loading="lazy" alt="Accepted payment methods including Visa, Mastercard, American Express and PayPal">
+                </div>
+                <div class="cc-product-trust-grid" role="list" aria-label="Purchase guarantees">
+                  <div class="cc-product-trust-item" role="listitem"><img src="{{ 'buyer-protection.png' | asset_url }}" width="1254" height="1254" loading="lazy" alt=""><strong>Buyer Protection</strong></div>
+                  <div class="cc-product-trust-item" role="listitem"><img src="{{ '30-day-money-back-guarantee-section-product.png' | asset_url }}" width="1254" height="1254" loading="lazy" alt=""><strong>30-Day Money-Back Guarantee</strong></div>
+                  <div class="cc-product-trust-item" role="listitem"><img src="{{ 'guaranteed-safe-checkout.png' | asset_url }}" width="1254" height="1254" loading="lazy" alt=""><strong>Guaranteed Safe Checkout</strong></div>
+                </div>
+              {% endform %}
+            {% else %}
+              <p class="cc-product-empty">Select a product in Theme Editor.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {% if offer_product != blank and section.settings.show_sticky_mobile %}<div class="cc-product-sticky"><button type="submit" name="add" form="{{ product_form_id }}" class="cc-product-add">Add to Cart</button><button type="submit" name="checkout" form="{{ product_form_id }}" class="cc-product-buy-now">Buy Now</button></div>{% endif %}
+      <dialog class="cc-product-lightbox"><button type="button" aria-label="Close image viewer">×</button><div></div></dialog>
+      {% if offer_product != blank %}<script type="application/json" data-product-variants>{{ offer_product.variants | json }}</script>{% endif %}
+    </section>
+
+    <section class="cc-section cc-guarantees" id="guarantees" style="background-image:url('{{ 'background-risk-free-purchase-peace-of-mind.jpg' | asset_url }}')"><div class="cc-wrap"><div class="cc-heading"><p class="cc-eyebrow">SHOP WITH CONFIDENCE</p><h2>Risk-Free Purchase, Peace of Mind</h2></div><div class="cc-guarantee-grid"><article><div class="cc-round-icon"><img src="{{ '30-day-money-back-guarantee.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></div><h3>30-Day Money-Back Guarantee</h3><p>Should we not meet your expectations, we offer a full refund within 30 days.</p></article><article><div class="cc-round-icon"><img src="{{ '24-7-quality-customer-service.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></div><h3>24/7 Quality Customer Service</h3><p>Our quality customer service team is here to help you 24 hours a day.</p></article><article><div class="cc-round-icon"><img src="{{ 'powered-by-real-users.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></div><h3>Powered by Real Users</h3><p>Real-user experience drives our development and testing to create the ultimate solution.</p></article></div></div></section>
+
+    <section class="cc-section cc-wrap cc-faq" id="faq"><div class="cc-heading"><p class="cc-eyebrow">NEED TO KNOW</p><h2>Frequently Asked Questions</h2></div><details><summary>Will the cushions fit my car?</summary><p>The adjustable straps are designed to work with most standard car seats. Check the selected product details before ordering.</p></details><details><summary>Is the memory foam too firm or too soft?</summary><p>The high-density slow-rebound foam balances gentle cushioning with steady support.</p></details><details><summary>How do I clean the cover?</summary><p>Unzip and remove the outer cover, machine wash on a gentle cycle, then air dry. Do not wash the foam core.</p></details><details><summary>Can I use it outside the car?</summary><p>Yes. It can also add support to office chairs, gaming chairs, and suitable home seating.</p></details><details><summary>What if I am not satisfied?</summary><p>Contact customer service within 30 days so the team can help with the money-back guarantee process.</p></details></section>
+  </div>
+
+  <footer class="cc-footer"><div class="cc-wrap"><div><span class="cc-footer-icon"><img src="{{ 'fast-shipping.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><b>Fast Shipping</b><small>Quick delivery to your door.</small></div><div><span class="cc-footer-icon"><img src="{{ 'payment-security.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><b>Payment Security</b><small>Safe and secure checkout.</small></div><div><span class="cc-footer-icon"><img src="{{ '24-7-quality-customer-service.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><b>24/7 Service</b><small>We are here for you anytime.</small></div><div><span class="cc-footer-icon"><img src="{{ 'money-back-guarantee.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><b>Money Back Guarantee</b><small>30-day risk-free confidence.</small></div></div></footer>
+</div>
+
+<script>
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    const timer = root?.querySelector('[data-cc-countdown]');
+    if (!timer || timer.dataset.ready) return;
+    timer.dataset.ready = 'true';
+    let remaining = 8 * 60 * 60 + 42 * 60 + 18;
+    const tick = () => {
+      remaining = Math.max(0, remaining - 1);
+      timer.querySelector('[data-hours]').textContent = String(Math.floor(remaining / 3600)).padStart(2, '0');
+      timer.querySelector('[data-minutes]').textContent = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+      timer.querySelector('[data-seconds]').textContent = String(remaining % 60).padStart(2, '0');
+    };
+    setInterval(tick, 1000);
+  })();
+
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root || root.dataset.ccMenuReady === 'true') return;
+    root.dataset.ccMenuReady = 'true';
+    const setMenu = (open) => {
+      const menu = root.querySelector('[data-cc-mobile-menu]');
+      const opener = root.querySelector('[data-cc-menu-open]');
+      if (!menu || !opener) return;
+      menu.setAttribute('aria-hidden', String(!open));
+      opener.setAttribute('aria-expanded', String(open));
+      root.classList.toggle('cc-menu-is-open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+    root.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest('[data-cc-menu-open]')) {
+        event.preventDefault();
+        setMenu(true);
+        return;
+      }
+      if (target.closest('[data-cc-menu-close], [data-cc-menu-overlay], [data-cc-mobile-menu] a')) {
+        setMenu(false);
+      }
+    });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setMenu(false); });
+  })();
+
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    const bar = root?.querySelector('[data-cc-page-progress]');
+    if (!root || !bar || root.dataset.ccProgressReady === 'true') return;
+    root.dataset.ccProgressReady = 'true';
+    let ticking = false;
+    const update = () => {
+      const rect = root.getBoundingClientRect();
+      const distance = Math.max(1, root.offsetHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, -rect.top / distance));
+      bar.style.transform = `scaleX(${progress})`;
+      ticking = false;
+    };
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+  })();
+
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    const faq = root?.querySelector('.cc-faq');
+    if (!faq || faq.dataset.ccFaqReady === 'true') return;
+    faq.dataset.ccFaqReady = 'true';
+    const animations = new WeakMap();
+    faq.querySelectorAll('details').forEach((item) => {
+      const summary = item.querySelector('summary');
+      const answer = item.querySelector('p');
+      if (!summary || !answer) return;
+      summary.setAttribute('aria-expanded', String(item.open));
+      summary.addEventListener('click', (event) => {
+        event.preventDefault();
+        animations.get(item)?.cancel();
+        const opening = summary.getAttribute('aria-expanded') !== 'true';
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          item.open = opening;
+          summary.setAttribute('aria-expanded', String(opening));
+          return;
+        }
+        if (opening) item.open = true;
+        summary.setAttribute('aria-expanded', String(opening));
+        const fullHeight = answer.scrollHeight;
+        const animation = answer.animate(
+          opening
+            ? [
+                { height: '0px', opacity: 0, transform: 'translateY(-6px)', paddingBottom: '0px' },
+                { height: `${fullHeight}px`, opacity: 1, transform: 'translateY(0)', paddingBottom: '22px' },
+              ]
+            : [
+                { height: `${fullHeight}px`, opacity: 1, transform: 'translateY(0)', paddingBottom: '22px' },
+                { height: '0px', opacity: 0, transform: 'translateY(-6px)', paddingBottom: '0px' },
+              ],
+          { duration: opening ? 320 : 240, easing: 'cubic-bezier(.22,1,.36,1)' }
+        );
+        animations.set(item, animation);
+        animation.onfinish = () => {
+          if (!opening) item.open = false;
+          answer.style.removeProperty('height');
+          answer.style.removeProperty('opacity');
+          answer.style.removeProperty('transform');
+          answer.style.removeProperty('padding-bottom');
+          animations.delete(item);
+        };
+        animation.oncancel = () => animations.delete(item);
+      });
+    });
+  })();
+
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    const gallery = root?.querySelector('.cc-offer-gallery');
+    const mainImage = gallery?.querySelector('.cc-offer-main-image');
+    const variantSelect = root?.querySelector('#cc-variant-{{ section.id }}');
+    if (!gallery || !mainImage || gallery.dataset.ccGalleryReady === 'true') return;
+    gallery.dataset.ccGalleryReady = 'true';
+
+    let imageChangeId = 0;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const showImage = async (source, variantPosition) => {
+      if (!source) return;
+      const changeId = ++imageChangeId;
+
+      gallery.querySelectorAll('.cc-thumb').forEach((thumb) => {
+        const isMatch = variantPosition
+          ? thumb.dataset.ccVariantPosition === variantPosition
+          : thumb.dataset.ccProductImage === source;
+        thumb.classList.toggle('is-active', isMatch);
+        if (isMatch) thumb.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
+      });
+
+      const preload = new Image();
+      preload.src = source;
+      try {
+        await preload.decode();
+      } catch (error) {}
+      if (changeId !== imageChangeId) return;
+
+      if (!prefersReducedMotion) {
+        await mainImage.animate(
+          [
+            { opacity: 1, transform: 'scale(1)' },
+            { opacity: 0, transform: 'scale(.975)' },
+          ],
+          { duration: 150, easing: 'ease-out', fill: 'forwards' }
+        ).finished.catch(() => {});
+      }
+
+      mainImage.src = source;
+      mainImage.removeAttribute('srcset');
+      mainImage.alt = variantPosition ? `Product variant ${variantPosition}` : mainImage.alt;
+
+      if (!prefersReducedMotion) {
+        mainImage.animate(
+          [
+            { opacity: 0, transform: 'scale(.975)' },
+            { opacity: 1, transform: 'scale(1)' },
+          ],
+          { duration: 320, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards' }
+        );
+      }
+    };
+
+    gallery.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-cc-product-image]');
+      if (!button || !gallery.contains(button)) return;
+      if (variantSelect && button.dataset.ccVariantPosition) {
+        const matchingOption = Array.from(variantSelect.options).find(
+          (option) => option.dataset.ccVariantPosition === button.dataset.ccVariantPosition
+        );
+        if (matchingOption && !matchingOption.disabled) variantSelect.value = matchingOption.value;
+      }
+      showImage(button.dataset.ccProductImage, button.dataset.ccVariantPosition);
+    });
+
+    variantSelect?.addEventListener('change', () => {
+      const option = variantSelect.options[variantSelect.selectedIndex];
+      showImage(option?.dataset.ccVariantImage, option?.dataset.ccVariantPosition);
+    });
+  })();
+
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    const card = root?.querySelector('.cc-pain-grid .cc-video-card');
+    const video = card?.querySelector('.cc-pain-hover-video');
+    if (!card || !video || card.dataset.autoplayVideoReady === 'true') return;
+    card.dataset.autoplayVideoReady = 'true';
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.controls = false;
+    video.removeAttribute('controls');
+
+    video.autoplay = true;
+    const startVideo = () => video.play().catch(() => {});
+    if (video.readyState >= 2) startVideo();
+    else video.addEventListener('canplay', startVideo, { once: true });
+  })();
+
+  (() => {
+    const root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root || root.dataset.scrollRevealReady === 'true') return;
+    root.dataset.scrollRevealReady = 'true';
+    const landing = root.querySelector('.cc-landing');
+    if (!landing) return;
+
+    const selectors = [
+      '.cc-heading',
+      '.cc-pain-grid > article',
+      '.cc-contour > *',
+      '.cc-lifestyle-copy',
+      '.cc-care > *',
+      '.cc-inline-instant-grid > article',
+      '.cc-use-grid > article',
+      '.cc-specs > *',
+      '.cc-product-gallery',
+      '.cc-product-info',
+      '.cc-product-payment-methods',
+      '.cc-product-trust-item',
+      '.cc-guarantee-grid > article',
+      '.cc-faq details',
+      '.cc-footer .cc-wrap > div',
+    ];
+    const items = [...root.querySelectorAll(selectors.join(','))];
+    items.forEach((item, index) => {
+      item.dataset.scrollReveal = '';
+      item.style.setProperty('--reveal-delay', `${(index % 4) * 70}ms`);
+    });
+    landing.classList.add('cc-reveal-ready');
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      items.forEach((item) => item.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    items.forEach((item) => observer.observe(item));
+  })();
+
+  (() => {
+    const section = document.getElementById('cc-product-{{ section.id }}');
+    if (!section || section.dataset.productReady === 'true') return;
+    section.dataset.productReady = 'true';
+
+    const variantsNode = section.querySelector('[data-product-variants]');
+    const variants = variantsNode ? JSON.parse(variantsNode.textContent) : [];
+    const optionGroups = [...section.querySelectorAll('[data-option-position]')];
+    const variantIdInput = section.querySelector('[data-variant-id]');
+    const currentPrice = section.querySelector('[data-current-price]');
+    const oldPrice = section.querySelector('[data-old-price]');
+    const saveBadge = section.querySelector('[data-save-badge]');
+    const saveAmount = section.querySelector('[data-save-amount]');
+    const stock = section.querySelector('[data-stock]');
+    const purchaseButtons = [...section.querySelectorAll('[data-add-button], [data-buy-button], .cc-product-sticky button')];
+    const mediaItems = [...section.querySelectorAll('.cc-product-media')];
+    const thumbnails = [...section.querySelectorAll('.cc-product-thumbnail')];
+    const counter = section.querySelector('.cc-product-counter');
+    const stage = section.querySelector('.cc-product-media-stage');
+    const lightbox = section.querySelector('.cc-product-lightbox');
+    const moneyFormat = {{ shop.money_format | json }};
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const formatMoney = (cents) => {
+      const value = Number(cents || 0);
+      const token = moneyFormat.match(/\{\{\s*(\w+)\s*\}\}/)?.[1] || 'amount';
+      let amount;
+      if (token.includes('no_decimals')) amount = Math.round(value / 100).toLocaleString();
+      else if (token.includes('comma_separator')) amount = (value / 100).toFixed(2).replace('.', ',');
+      else amount = (value / 100).toFixed(2);
+      return moneyFormat.replace(/\{\{\s*\w+\s*\}\}/, amount);
+    };
+
+    const showMedia = (target, scrollThumb = true) => {
+      const next = mediaItems.find((item) => item.dataset.mediaId === target);
+      if (!next) return;
+      mediaItems.forEach((item) => {
+        const active = item === next;
+        item.classList.toggle('is-active', active);
+        item.querySelectorAll('video').forEach((video) => { if (!active) video.pause(); });
+      });
+      thumbnails.forEach((thumb) => {
+        const active = thumb.dataset.mediaTarget === target;
+        thumb.classList.toggle('is-active', active);
+        thumb.setAttribute('aria-selected', String(active));
+        if (active && scrollThumb) thumb.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
+      });
+      const index = mediaItems.indexOf(next);
+      if (counter) counter.textContent = `${index + 1}/${mediaItems.length}`;
+    };
+
+    const selectedValues = () => optionGroups.map((group) => group.querySelector('.is-selected')?.dataset.optionValue);
+    const findVariant = (values) => variants.find((variant) => variant.options.every((value, index) => value === values[index]));
+
+    const updateOptionAvailability = () => {
+      const values = selectedValues();
+      optionGroups.forEach((group, groupIndex) => {
+        group.querySelectorAll('[data-option-value]').forEach((button) => {
+          const candidate = [...values];
+          candidate[groupIndex] = button.dataset.optionValue;
+          const available = variants.some((variant) => variant.available && variant.options.every((value, index) => index === groupIndex ? value === candidate[index] : !candidate[index] || value === candidate[index]));
+          button.classList.toggle('is-unavailable', !available);
+          button.disabled = !available;
+        });
+      });
+    };
+
+    const updateVariant = (variant) => {
+      if (!variant) return;
+      if (variantIdInput) variantIdInput.value = variant.id;
+      if (currentPrice) currentPrice.textContent = formatMoney(variant.price);
+      const discounted = Number(variant.compare_at_price || 0) > Number(variant.price || 0);
+      oldPrice?.classList.toggle('is-hidden', !discounted);
+      saveBadge?.classList.toggle('is-hidden', !discounted);
+      if (oldPrice && discounted) oldPrice.textContent = formatMoney(variant.compare_at_price);
+      if (saveAmount && discounted) saveAmount.textContent = formatMoney(variant.compare_at_price - variant.price);
+      if (stock) {
+        stock.classList.toggle('is-sold-out', !variant.available);
+        stock.lastChild.textContent = variant.available ? 'In stock' : 'Sold out';
+      }
+      purchaseButtons.forEach((button) => {
+        button.disabled = !variant.available;
+        button.textContent = variant.available ? (button.classList.contains('cc-product-add') ? 'Add to Cart' : 'Buy Now') : 'Sold Out';
+      });
+      const featuredId = variant.featured_media?.id || variant.featured_image?.id;
+      if (featuredId) showMedia(`media-${featuredId}`);
+      const url = new URL(window.location.href);
+      url.searchParams.set('variant', variant.id);
+      window.history.replaceState({}, '', url);
+      updateOptionAvailability();
+    };
+
+    optionGroups.forEach((group) => {
+      group.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-option-value]');
+        if (!button || button.disabled) return;
+        group.querySelectorAll('[data-option-value]').forEach((item) => {
+          const selected = item === button;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-pressed', String(selected));
+        });
+        const label = group.querySelector('[data-selected-option]');
+        if (label) label.textContent = button.dataset.optionValue;
+        updateVariant(findVariant(selectedValues()));
+      });
+    });
+
+    thumbnails.forEach((thumb) => thumb.addEventListener('click', () => showMedia(thumb.dataset.mediaTarget, false)));
+
+    section.querySelector('[data-quantity-minus]')?.addEventListener('click', () => {
+      const input = section.querySelector('.cc-product-quantity input');
+      input.value = Math.max(1, Number(input.value || 1) - 1);
+    });
+    section.querySelector('[data-quantity-plus]')?.addEventListener('click', () => {
+      const input = section.querySelector('.cc-product-quantity input');
+      input.value = Math.max(1, Number(input.value || 1) + 1);
+    });
+
+    let touchStart = 0;
+    stage?.addEventListener('touchstart', (event) => { touchStart = event.changedTouches[0].clientX; }, { passive: true });
+    stage?.addEventListener('touchend', (event) => {
+      const distance = event.changedTouches[0].clientX - touchStart;
+      if (Math.abs(distance) < 45) return;
+      const activeIndex = mediaItems.findIndex((item) => item.classList.contains('is-active'));
+      const nextIndex = distance < 0 ? Math.min(mediaItems.length - 1, activeIndex + 1) : Math.max(0, activeIndex - 1);
+      showMedia(mediaItems[nextIndex]?.dataset.mediaId);
+    }, { passive: true });
+
+    const openLightbox = () => {
+      const active = section.querySelector('.cc-product-media.is-active');
+      const image = active?.querySelector('img');
+      if (!image || !lightbox?.showModal) return;
+      const clone = image.cloneNode(true);
+      clone.removeAttribute('loading');
+      lightbox.querySelector('div').replaceChildren(clone);
+      lightbox.showModal();
+    };
+    section.querySelector('.cc-product-zoom')?.addEventListener('click', openLightbox);
+    stage?.addEventListener('dblclick', openLightbox);
+    lightbox?.querySelector('button')?.addEventListener('click', () => lightbox.close());
+    lightbox?.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
+
+    const activeMedia = section.querySelector('.cc-product-media.is-active');
+    showMedia(activeMedia?.dataset.mediaId, false);
+    const initialVariant = variants.find((variant) => String(variant.id) === variantIdInput?.value);
+    if (initialVariant) updateVariant(initialVariant);
+    else updateOptionAvailability();
+
+    const stickyBar = section.querySelector('.cc-product-sticky');
+    if (stickyBar && 'IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => stickyBar.classList.toggle('is-visible', entry.isIntersecting), { threshold: 0.05 }).observe(section.querySelector('.cc-product-layout'));
+    } else stickyBar?.classList.add('is-visible');
+
+    const countdown = section.querySelector('[data-product-countdown]');
+    if (countdown) {
+      const storageKey = 'cc-product-countdown-{{ section.id }}';
+      const duration = Math.max(1, Number(countdown.dataset.hours || 8)) * 60 * 60 * 1000;
+      let endTime = Number(sessionStorage.getItem(storageKey));
+      if (!endTime || endTime <= Date.now()) {
+        endTime = Date.now() + duration;
+        sessionStorage.setItem(storageKey, String(endTime));
+      }
+      const renderCountdown = () => {
+        const remaining = Math.max(0, endTime - Date.now());
+        const hours = Math.floor(remaining / 3600000);
+        const minutes = Math.floor((remaining % 3600000) / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        countdown.textContent = [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':');
+      };
+      renderCountdown();
+      setInterval(renderCountdown, 1000);
+    }
+  })();
+</script>
+
+{% stylesheet %}
+  .cc-landing .cc-logo-image{display:block;width:auto;height:46px;object-fit:contain}
+  @media(max-width:749px){.cc-landing .cc-logo-image{width:auto;height:36px}}
+  .cc-landing .cc-announcement{background:#fff;color:#000}
+  .cc-landing .cc-wrap{width:min(var(--page-content-width),calc(100% - var(--page-margin) * 2));margin-inline:auto}
+  .cc-landing .cc-header{background:#111826;color:#fff;padding-inline:max(var(--page-margin),calc((100vw - var(--page-content-width))/2))}
+  .cc-landing .cc-nav a{position:relative;padding-block:8px}
+  .cc-landing .cc-nav a::after{content:'';position:absolute;right:50%;bottom:2px;left:50%;height:2px;border-radius:99px;background:currentColor;transition:right .22s ease,left .22s ease}
+  .cc-landing .cc-nav a:hover::after,.cc-landing .cc-nav a:focus-visible::after{right:0;left:0}
+  .cc-header-actions{justify-self:end;display:flex;align-items:center;gap:10px}
+  .cc-header-actions .cc-button,.cc-header-icon{height:42px;min-height:42px}
+  .cc-header-actions .cc-button{padding-inline:18px;border-radius:99px;font-size:.75rem}
+  .cc-landing .cc-mobile-shop{border-radius:99px}
+  .cc-header-icon{display:grid;place-items:center;width:42px;border:0;border-radius:50%;color:#fff;text-decoration:none;transition:transform .22s ease,background-color .22s ease,box-shadow .22s ease}
+  .cc-header-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .22s ease}
+  .cc-header-icon:hover,.cc-header-icon:focus-visible{color:#fff;background:transparent;transform:translateY(-4px);box-shadow:0 10px 22px rgba(0,0,0,.28)}
+  .cc-header-icon:hover svg,.cc-header-icon:focus-visible svg{transform:scale(1.08)}
+  .cc-menu-toggle{position:relative;z-index:3;border:0!important;cursor:pointer;touch-action:manipulation}
+  .cc-menu-toggle,.cc-mobile-menu,.cc-menu-overlay{display:none}
+  @media(max-width:749px){.cc-landing .cc-wrap{width:min(1140px,calc(100% - 32px))}.cc-landing .cc-header{height:64px;display:flex;justify-content:space-between;padding-inline:16px}.cc-landing .cc-nav,.cc-landing .cc-header-actions{display:none}.cc-menu-toggle{display:grid;gap:4px;place-content:center;width:40px;height:40px;padding:0;border:1px solid rgba(255,255,255,.7);border-radius:8px;background:transparent}.cc-menu-toggle span{display:block;width:18px;height:2px;background:#fff}.cc-mobile-menu{display:flex;position:fixed;z-index:1002;inset:0 0 0 auto;width:min(86vw,360px);padding:24px;background:#111826;color:#fff;flex-direction:column;transform:translateX(100%);visibility:hidden;transition:transform .28s ease,visibility .28s ease}.cc-menu-overlay{display:block;position:fixed;z-index:1001;inset:0;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease}.cc-menu-is-open .cc-mobile-menu{transform:translateX(0);visibility:visible}.cc-menu-is-open .cc-menu-overlay{opacity:1;visibility:visible}.cc-mobile-menu-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.18);font-weight:800;letter-spacing:.12em}.cc-mobile-menu-head button{width:40px;height:40px;border:0;background:transparent;color:#fff;font-size:2rem;line-height:1}.cc-mobile-menu nav{display:grid;margin-top:18px}.cc-mobile-menu nav a{padding:17px 0;border-bottom:1px solid rgba(255,255,255,.14);color:#fff;text-decoration:none;font-weight:800;font-size:.86rem}.cc-mobile-shop{margin-top:auto;width:100%;min-height:46px}.cc-header-icon svg{width:21px;height:21px}}
+  .cc-landing{--cc-orange:#38bdf8;--cc-ink:#171717;--cc-cream:#f8f4ed;--cc-line:#ded8cf;background:var(--cc-cream);color:var(--cc-ink);font-family:var(--font-body--family);line-height:1.5;overflow:hidden}.cc-landing *{box-sizing:border-box}.cc-landing h1,.cc-landing h2,.cc-landing h3,.cc-landing p{margin-top:0}.cc-landing h1,.cc-landing h2,.cc-landing h3{font-family:var(--font-heading--family);letter-spacing:-.035em;line-height:1.05}.cc-landing h1{font-size:clamp(3.2rem,7vw,7.5rem);max-width:760px;margin-bottom:24px}.cc-landing h2{font-size:clamp(2.25rem,4vw,4.6rem);margin-bottom:18px}.cc-landing h3{font-size:1.35rem;margin-bottom:8px}.cc-landing img,.cc-landing video,.cc-placeholder{display:block;width:100%;height:100%;object-fit:cover}.cc-wrap{width:min(1240px,calc(100% - 48px));margin-inline:auto}.cc-section{padding-block:clamp(72px,9vw,140px)}.cc-heading{text-align:center;max-width:780px;margin:0 auto 48px}.cc-heading>p:last-child{font-size:1.15rem;color:#625d56}.cc-eyebrow{color:var(--cc-orange);font-size:.78rem;font-weight:800;letter-spacing:.16em}.cc-announcement{background:var(--cc-orange);color:#fff;min-height:34px;display:grid;place-items:center;font-size:.76rem;font-weight:800;letter-spacing:.03em}.cc-marquee{display:flex;gap:48px;white-space:nowrap}.cc-marquee span:not(:last-child)::after{content:'•';margin-left:48px}.cc-header{height:76px;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;padding:0 4vw;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.cc-logo{font-size:1.3rem;font-weight:900;letter-spacing:.12em;color:inherit;text-decoration:none}.cc-nav{display:flex;justify-content:center;gap:34px}.cc-nav a{color:inherit;text-decoration:none;font-weight:800;font-size:.78rem}.cc-header-cta{justify-self:end}.cc-button{display:inline-flex;justify-content:center;align-items:center;min-height:50px;padding:0 28px;background:var(--cc-orange);color:white!important;text-decoration:none;border:0;border-radius:4px;font-weight:900;letter-spacing:.03em;cursor:pointer}.cc-button[disabled]{opacity:.55;cursor:not-allowed}.cc-hero{min-height:clamp(620px,78vh,860px);position:relative;display:flex;align-items:center;background:#111;color:#fff}.cc-hero-media,.cc-hero-overlay{position:absolute;inset:0}.cc-hero-overlay{background:linear-gradient(90deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.62) 42%,rgba(0,0,0,.08) 72%)}.cc-hero-content{position:relative;z-index:1}.cc-hero-content>p:not(.cc-eyebrow){font-size:1.22rem;max-width:560px;margin-bottom:30px}.cc-mini-trust{display:flex;gap:28px;margin-top:36px;font-size:.78rem;font-weight:700}.cc-pain-grid{display:grid;grid-template-columns:3fr 3fr 4fr;gap:18px}.cc-media-card,.cc-video-card{background:#fff;border:1px solid var(--cc-line);border-radius:12px;overflow:hidden}.cc-card-media,.cc-video-card{min-height:320px;position:relative}.cc-card-copy{padding:24px;position:relative}.cc-card-copy .cc-icon{float:left;margin-right:12px}.cc-card-copy p{font-size:.92rem;color:#625d56;margin:0}.cc-video-card video{position:absolute;inset:0}.cc-play{position:absolute;left:50%;top:50%;translate:-50% -50%;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:white;color:#111;font-size:1.4rem;padding-left:4px}.cc-soft,.cc-uses,.cc-guarantees{background:#fff}.cc-contour{display:grid;grid-template-columns:1fr 2fr 1fr;align-items:center;gap:30px}.cc-product-stage{height:500px}.cc-product-stage img{object-fit:contain}.cc-callouts{display:grid;gap:80px}.cc-callouts div{display:grid;gap:6px}.cc-callouts span{font-size:.86rem;color:#6a655e}.cc-callouts-right{text-align:right}.cc-material-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.cc-material-grid article{display:grid;grid-template-columns:1fr 1fr;min-height:300px;background:#fff;border:1px solid var(--cc-line);border-radius:12px;overflow:hidden}.cc-material-grid article>div{padding:36px;align-self:center}.cc-center{text-align:center;margin-top:28px}.cc-lifestyle{height:680px;position:relative;background:#111;color:#fff}.cc-lifestyle-media{position:absolute;inset:0}.cc-lifestyle-media:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.8),transparent 70%)}.cc-lifestyle-copy{position:relative;z-index:1;padding-top:100px}.cc-lifestyle-copy p:last-child{font-size:1.2rem}.cc-care,.cc-specs,.cc-offer{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}.cc-care>div:first-child>p{font-size:1.1rem}.cc-feature{display:flex;gap:18px;margin-top:30px}.cc-icon{flex:0 0 46px;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--cc-orange);color:#fff;font-weight:900}.cc-care-media,.cc-spec-image{height:600px;border-radius:14px;overflow:hidden;background:white}.cc-use-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.cc-use-grid article{text-align:center;padding:45px 20px;border:1px solid var(--cc-line);border-radius:12px;background:var(--cc-cream)}.cc-use-grid span{font-size:3rem}.cc-specs dl{border-top:1px solid var(--cc-line)}.cc-specs dl div{display:grid;grid-template-columns:180px 1fr;padding:15px 0;border-bottom:1px solid var(--cc-line)}.cc-specs dt{font-weight:800}.cc-specs dd{margin:0;color:#625d56}.cc-promo{min-height:54px;background:var(--cc-orange);color:#fff;display:flex;justify-content:center;align-items:center;gap:70px;font-weight:900;letter-spacing:.04em}.cc-offer-gallery{position:relative;background:white;border-radius:14px;padding:30px}.cc-offer-gallery>img,.cc-offer-gallery>.cc-placeholder{height:580px;object-fit:contain}.cc-hot{position:absolute;top:22px;left:22px;z-index:1;background:var(--cc-orange);color:#fff;border-radius:50%;width:82px;height:82px;display:grid;place-items:center;text-align:center;font-weight:900}.cc-thumbs{display:flex;gap:10px}.cc-thumbs img{width:80px;height:80px;object-fit:cover;border:1px solid var(--cc-line);border-radius:6px}.cc-buy-card{background:#fff;border:1px solid var(--cc-line);border-radius:14px;padding:clamp(28px,4vw,56px)}.cc-price{display:flex;align-items:center;gap:16px;margin:20px 0}.cc-price span{font-size:2.4rem;font-weight:900;color:var(--cc-orange)}.cc-price s{color:#888}.cc-countdown{display:flex;gap:10px;margin:25px 0}.cc-countdown span{display:grid;text-align:center;font-size:.65rem;color:#777}.cc-countdown b{display:grid;place-items:center;width:62px;height:54px;background:var(--cc-cream);color:var(--cc-orange);font-size:1.35rem;border-radius:6px}.cc-product-form{display:grid;gap:10px}.cc-product-form label{font-weight:800}.cc-product-form select{width:100%;min-height:54px;border:1px solid var(--cc-line);background:#fff;padding:0 14px;border-radius:5px}.cc-buy{width:100%;font-size:1.15rem;margin-top:8px}.cc-protection{margin-top:25px;padding-top:20px;border-top:1px solid var(--cc-line)}.cc-protection p{margin-bottom:12px}.cc-payments{border:1px solid var(--cc-line);padding:13px;text-align:center;font-weight:800;color:#555}.cc-guarantee-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.cc-guarantee-grid article{background:var(--cc-cream);border:1px solid var(--cc-line);padding:36px;border-radius:12px}.cc-guarantee-grid article>span{display:grid;place-items:center;width:70px;height:70px;border:3px solid var(--cc-orange);border-radius:50%;color:var(--cc-orange);font-size:1.35rem;font-weight:900;margin-bottom:24px}.cc-faq details{background:#fff;border-top:1px solid var(--cc-line);padding:0 20px}.cc-faq details:last-child{border-bottom:1px solid var(--cc-line)}.cc-faq summary{padding:22px 0;font-weight:800;cursor:pointer}.cc-faq details p{padding-bottom:22px;color:#625d56}.cc-footer{background:#171717;color:#fff;padding:50px 0}.cc-footer .cc-wrap{display:grid;grid-template-columns:repeat(4,1fr)}.cc-footer .cc-wrap>div{display:grid;grid-template-columns:auto 1fr;column-gap:14px;padding:0 25px;border-right:1px solid #555}.cc-footer .cc-wrap>div:last-child{border:0}.cc-footer span{grid-row:1/3;color:var(--cc-orange);font-size:2rem}.cc-footer b,.cc-footer small{display:block}.cc-footer small{color:#bbb}
+  @media(max-width:749px){.cc-wrap{width:min(100% - 32px,600px)}.cc-section{padding-block:64px}.cc-landing h1{font-size:3.3rem}.cc-landing h2{font-size:2.25rem}.cc-announcement{overflow:hidden}.cc-marquee{animation:cc-scroll 16s linear infinite}.cc-header{height:auto;grid-template-columns:1fr auto;padding:15px 18px}.cc-logo{font-size:1.05rem}.cc-nav{grid-column:1/-1;grid-row:2;justify-content:space-between;width:100%;padding-top:14px;margin-top:14px;border-top:1px solid #eee}.cc-header-cta{display:none}.cc-hero{min-height:720px;align-items:flex-start;padding-top:70px}.cc-hero-overlay{background:linear-gradient(180deg,rgba(0,0,0,.88),rgba(0,0,0,.42) 68%,rgba(0,0,0,.15))}.cc-hero-content>p:not(.cc-eyebrow){font-size:1rem;max-width:290px}.cc-mini-trust{position:absolute;top:520px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;font-size:.68rem}.cc-pain-grid{grid-template-columns:1fr 1fr}.cc-video-card{grid-column:1/-1}.cc-card-media{min-height:180px}.cc-card-copy{padding:16px}.cc-card-copy .cc-icon{display:none}.cc-video-card{min-height:240px}.cc-contour{grid-template-columns:1fr}.cc-product-stage{height:360px;grid-row:1}.cc-callouts{grid-template-columns:1fr 1fr;gap:15px}.cc-callouts-right{text-align:left}.cc-material-grid,.cc-care,.cc-specs,.cc-offer{grid-template-columns:1fr;gap:28px}.cc-material-grid article{min-height:190px}.cc-material-grid article>div{padding:20px}.cc-lifestyle{height:540px}.cc-care-media,.cc-spec-image{height:380px}.cc-use-grid{grid-template-columns:1fr 1fr}.cc-use-grid article{padding:28px 12px}.cc-specs dl div{grid-template-columns:130px 1fr;font-size:.88rem}.cc-promo{overflow:hidden;justify-content:flex-start;gap:50px;padding-left:20px;white-space:nowrap}.cc-promo div:not(:first-child){display:none}.cc-offer-gallery>img,.cc-offer-gallery>.cc-placeholder{height:390px}.cc-guarantee-grid{grid-template-columns:1fr}.cc-footer .cc-wrap{grid-template-columns:1fr 1fr;gap:30px 0}.cc-footer .cc-wrap>div{padding:0 12px;border:0}.cc-footer small{font-size:.7rem}@keyframes cc-scroll{to{transform:translateX(-65%)}}}
+
+  /* Clear, high-contrast announcement and navigation. */
+  .cc-landing .cc-announcement {
+    min-height: 40px;
+    padding-inline: 20px;
+    overflow: hidden;
+    background: var(--cc-orange);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .055em;
+    line-height: 1.3;
+    text-align: center;
+  }
+  .cc-landing .cc-marquee {
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+  }
+  .cc-landing .cc-marquee span {
+    display: inline-flex;
+    align-items: center;
+  }
+  .cc-landing .cc-marquee span:not(:last-child)::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    margin-left: 28px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .7;
+  }
+  .cc-landing .cc-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 80px;
+    grid-template-columns: minmax(180px,1fr) auto minmax(240px,1fr);
+    gap: 28px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    box-shadow: 0 8px 24px rgba(10,18,32,.12);
+  }
+  .cc-landing .cc-logo {
+    width: fit-content;
+  }
+  .cc-landing .cc-logo-image {
+    max-width: 170px;
+    height: 44px;
+  }
+  .cc-landing .cc-nav {
+    gap: clamp(20px,2.4vw,38px);
+  }
+  .cc-landing .cc-nav a {
+    padding-block: 12px;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+  }
+  .cc-landing .cc-header-icon {
+    background: rgba(255,255,255,.08);
+    outline-offset: 3px;
+  }
+  .cc-landing .cc-header-icon:hover,
+  .cc-landing .cc-header-icon:focus-visible {
+    background: rgba(255,255,255,.16);
+    transform: translateY(-2px);
+  }
+  .cc-landing .cc-header-cta {
+    min-width: 116px;
+    box-shadow: 0 6px 16px rgba(56,189,248,.24);
+  }
+  .cc-landing .cc-nav a:focus-visible,
+  .cc-landing .cc-logo:focus-visible,
+  .cc-landing .cc-button:focus-visible,
+  .cc-landing .cc-menu-toggle:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 750px) and (max-width: 1050px) {
+    .cc-landing .cc-header {
+      grid-template-columns: minmax(145px,1fr) auto minmax(96px,1fr);
+      gap: 16px;
+    }
+    .cc-landing .cc-logo-image { max-width: 145px; }
+    .cc-landing .cc-nav { gap: 18px; }
+    .cc-landing .cc-header-cta { display: none; }
+  }
+
+  @media (max-width: 749px) {
+    .cc-landing .cc-announcement {
+      min-height: 38px;
+      padding-inline: 0;
+      font-size: .7rem;
+    }
+    .cc-landing .cc-marquee {
+      width: max-content;
+      justify-content: flex-start;
+      gap: 28px;
+      padding-inline: 20px;
+      animation-duration: 22s;
+    }
+    .cc-landing .cc-header {
+      height: 68px;
+      padding: 0 16px;
+      box-shadow: 0 6px 18px rgba(10,18,32,.16);
+    }
+    .cc-landing .cc-logo-image {
+      max-width: 145px;
+      height: 36px;
+    }
+    .cc-landing .cc-menu-toggle {
+      width: 44px;
+      height: 44px;
+      border-color: rgba(255,255,255,.35)!important;
+      border-radius: 10px;
+      background: rgba(255,255,255,.08);
+    }
+    .cc-landing .cc-hero {
+      min-height: clamp(620px,calc(100svh - 106px),760px);
+      padding: clamp(42px,8vh,72px) 0 28px;
+      align-items: flex-start;
+      isolation: isolate;
+    }
+    .cc-landing .cc-hero-media img,
+    .cc-landing .cc-hero-media .cc-placeholder {
+      object-position: 68% center;
+    }
+    .cc-landing .cc-hero-overlay {
+      background:
+        linear-gradient(180deg,rgba(5,10,20,.92) 0%,rgba(5,10,20,.7) 38%,rgba(5,10,20,.18) 66%,rgba(5,10,20,.78) 100%),
+        linear-gradient(90deg,rgba(5,10,20,.42),transparent 80%);
+    }
+    .cc-landing .cc-hero-content {
+      display: flex;
+      min-height: calc(clamp(620px,calc(100svh - 106px),760px) - clamp(70px,12vh,100px));
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .cc-landing .cc-hero-content .cc-eyebrow {
+      margin-bottom: 12px;
+      font-size: .7rem;
+      line-height: 1.4;
+      letter-spacing: .13em;
+    }
+    .cc-landing .cc-hero h1 {
+      max-width: 10ch;
+      margin-bottom: 16px;
+      font-size: clamp(2.45rem,11vw,3.25rem);
+      line-height: .98;
+      text-wrap: balance;
+    }
+    .cc-landing .cc-hero-content > p:not(.cc-eyebrow) {
+      max-width: 32ch;
+      margin-bottom: 22px;
+      font-size: .95rem;
+      line-height: 1.55;
+    }
+    .cc-landing .cc-hero-content > .cc-button {
+      width: min(100%,300px);
+      min-height: 48px;
+    }
+    .cc-landing .cc-mini-trust {
+      position: static;
+      width: 100%;
+      margin-top: auto;
+      padding-top: 24px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      font-size: .72rem;
+      line-height: 1.35;
+    }
+    .cc-landing .cc-mini-trust span {
+      padding: 9px 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 8px;
+      background: rgba(5,10,20,.48);
+      backdrop-filter: blur(6px);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .cc-landing .cc-hero {
+      min-height: 640px;
+      padding-top: 36px;
+    }
+    .cc-landing .cc-hero-content { min-height: 576px; }
+    .cc-landing .cc-hero h1 { font-size: 2.35rem; }
+  }
+
+  /* Hero: floating content card on desktop, stacked media and content on mobile. */
+  .cc-landing .cc-hero {
+    height: 680px;
+    min-height: 680px;
+    padding: 0;
+    align-items: center;
+    overflow: hidden;
+    background: #eef0ed;
+  }
+  .cc-landing .cc-hero-media img,
+  .cc-landing .cc-hero-media .cc-placeholder {
+    object-fit: cover;
+    object-position: center;
+  }
+  .cc-landing .cc-hero-overlay {
+    background: linear-gradient(90deg,rgba(7,15,22,.14),transparent 52%);
+  }
+  .cc-landing .cc-hero-content {
+    display: flex;
+    min-height: 0;
+    align-items: center;
+  }
+  .cc-landing .cc-hero-card {
+    width: clamp(420px,36vw,560px);
+    padding: clamp(38px,4vw,58px);
+    border-radius: 48px;
+    background: #fff;
+    color: var(--cc-ink);
+    box-shadow: 0 24px 70px rgba(19,35,45,.16);
+  }
+  .cc-landing .cc-hero-pill {
+    display: inline-flex;
+    width: fit-content;
+    margin: 0 0 20px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    background: #f2eee5;
+    color: #425047;
+    font-size: .76rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .cc-landing .cc-hero-card h1 {
+    max-width: 11ch;
+    margin: 0 0 20px;
+    color: #152019;
+    font-size: clamp(2.6rem,3.5vw,4.15rem);
+    line-height: .98;
+    letter-spacing: -.045em;
+    text-wrap: balance;
+  }
+  .cc-landing .cc-hero-description {
+    max-width: 46ch;
+    margin: 0 0 28px;
+    color: #667068;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .cc-landing .cc-hero-benefits {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .cc-landing .cc-hero-benefit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: #26362d;
+    font-size: .78rem;
+    line-height: 1.3;
+  }
+  .cc-landing .cc-hero-benefit > span {
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: #edf3ee;
+    color: #315f49;
+    font-size: 1.1rem;
+    font-weight: 800;
+  }
+  .cc-landing .cc-hero-cta {
+    width: 100%;
+    min-height: 56px;
+    padding-inline: 24px;
+    justify-content: space-between;
+    border-radius: 999px;
+    background: var(--cc-orange);
+    box-shadow: 0 10px 24px rgba(56,189,248,.28);
+    font-size: .92rem;
+  }
+  .cc-landing .cc-hero-cta span:last-child {
+    font-size: 1.25rem;
+    transition: transform .2s ease;
+  }
+  .cc-landing .cc-hero-cta:hover span:last-child { transform: translateX(4px); }
+
+  @media (max-width: 749px) {
+    .cc-landing .cc-hero {
+      display: block;
+      height: auto;
+      min-height: 0;
+      padding: 0;
+      overflow: visible;
+      background: #fff;
+    }
+    .cc-landing .cc-hero-media {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: clamp(280px,76vw,390px);
+      background: #e8ebe7;
+    }
+    .cc-landing .cc-hero-media img,
+    .cc-landing .cc-hero-media .cc-placeholder {
+      object-position: 62% center;
+    }
+    .cc-landing .cc-hero-overlay { display: none; }
+    .cc-landing .cc-hero-content {
+      display: block;
+      width: 100%;
+      min-height: 0;
+      padding: 0;
+    }
+    .cc-landing .cc-hero-card {
+      width: 100%;
+      padding: 34px 20px 38px;
+      border-radius: 0;
+      box-shadow: none;
+      text-align: center;
+    }
+    .cc-landing .cc-hero-pill {
+      margin: 0 auto 16px;
+      font-size: .72rem;
+    }
+    .cc-landing .cc-hero-card h1 {
+      max-width: 12ch;
+      margin: 0 auto 16px;
+      font-size: clamp(2.25rem,10.5vw,3rem);
+      line-height: 1.02;
+    }
+    .cc-landing .cc-hero-description {
+      max-width: 38ch;
+      margin: 0 auto 24px;
+      font-size: .94rem;
+      line-height: 1.55;
+    }
+    .cc-landing .cc-hero-benefits {
+      gap: 10px;
+      margin-bottom: 22px;
+      text-align: left;
+    }
+    .cc-landing .cc-hero-benefit {
+      min-height: 78px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #f3f4f2;
+      font-size: .72rem;
+    }
+    .cc-landing .cc-hero-benefit > span {
+      flex-basis: 30px;
+      width: 30px;
+      height: 30px;
+    }
+    .cc-landing .cc-hero-cta {
+      min-height: 54px;
+      font-size: .88rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .cc-landing .cc-hero-media { height: 275px; }
+    .cc-landing .cc-hero-card { padding-inline: 16px; }
+    .cc-landing .cc-hero-benefit { padding: 10px 8px; }
+  }
+
+  .cc-landing .cc-round-icon,
+  .cc-landing .cc-footer-icon {
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--cc-orange);
+  }
+  .cc-landing .cc-round-icon img,
+  .cc-landing .cc-footer-icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+  .cc-landing .cc-round-icon {
+    width: 82px;
+    height: 82px;
+    margin-bottom: 24px;
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 2px rgba(56,189,248,.2),0 10px 24px rgba(56,189,248,.18);
+  }
+  .cc-landing .cc-footer-icon {
+    grid-row: 1/3;
+    width: 54px;
+    height: 54px;
+    border: 2px solid rgba(255,255,255,.24);
+    box-shadow: 0 8px 18px rgba(0,0,0,.22);
+  }
+  .cc-landing .cc-footer .cc-wrap > div {
+    align-items: center;
+  }
+
+  @media (max-width: 749px) {
+    .cc-landing .cc-round-icon {
+      width: 68px;
+      height: 68px;
+      margin-bottom: 18px;
+    }
+    .cc-landing .cc-footer-icon {
+      width: 46px;
+      height: 46px;
+    }
+  }
+
+  /* Compact page rhythm and progress indicators. */
+  .cc-landing {
+    --cc-orange: #38bdf8;
+    --cc-sky: #38bdf8;
+    --cc-sky-deep: #111826;
+    --cc-sky-soft: #eaf7ff;
+    --cc-cream: #f4f9fc;
+    --cc-line: #d9e7f0;
+  }
+  .cc-landing .cc-announcement,
+  .cc-landing .cc-promo {
+    background: var(--cc-sky);
+    color: #111826;
+  }
+  .cc-landing .cc-header,
+  .cc-landing .cc-footer {
+    background: #111826;
+  }
+  .cc-landing .cc-hot,
+  .cc-landing .cc-icon-holder {
+    background: #38bdf8;
+    color: #111826;
+  }
+  .cc-landing .cc-button,
+  .cc-landing .cc-hero-cta {
+    background: var(--cc-sky);
+    color: #111826!important;
+    box-shadow: 0 10px 24px rgba(56,189,248,.25);
+  }
+  .cc-landing .cc-button:hover,
+  .cc-landing .cc-button:focus-visible {
+    background: #111826;
+    color: #fff!important;
+  }
+  .cc-landing .cc-eyebrow {
+    color: var(--cc-sky-deep);
+  }
+  .cc-landing .cc-lifestyle .cc-eyebrow {
+    color: var(--cc-sky);
+  }
+  .cc-landing .cc-heading h2,
+  .cc-landing .cc-care > div:first-child > h2,
+  .cc-landing .cc-specs > div:first-child > h2,
+  .cc-landing .cc-lifestyle-copy h2 {
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+    font-size: clamp(1.05rem,4.6vw,3.65rem);
+    line-height: 1.08;
+    letter-spacing: -.04em;
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
+  .cc-landing .cc-media-card h3,
+  .cc-landing .cc-material-grid h3,
+  .cc-landing .cc-use-grid h3,
+  .cc-landing .cc-guarantee-grid h3,
+  .cc-landing .cc-buy-card h2,
+  .cc-landing .cc-hero-card h1 {
+    min-height: 2lh;
+  }
+  .cc-landing .cc-soft,
+  .cc-landing .cc-uses,
+  .cc-landing .cc-guarantees {
+    background: #fff;
+  }
+  .cc-landing .cc-uses,
+  .cc-landing .cc-guarantees {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  .cc-landing .cc-section-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 14px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 8px 22px rgba(17,24,38,.12);
+  }
+  .cc-landing .cc-card-copy .cc-icon {
+    overflow: hidden;
+  }
+  .cc-landing .cc-card-copy .cc-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cc-landing .cc-payments {
+    padding: 10px 14px;
+    background: #fff;
+  }
+  .cc-landing .cc-payments img {
+    width: 100%;
+    height: auto;
+    max-height: 46px;
+    object-fit: contain;
+  }
+  .cc-landing .cc-use-grid article,
+  .cc-landing .cc-countdown b {
+    background: var(--cc-sky-soft);
+  }
+  .cc-landing .cc-page-progress {
+    position: fixed;
+    z-index: 1100;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    pointer-events: none;
+    background: rgba(255,255,255,.18);
+  }
+  .cc-landing .cc-page-progress > span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background: linear-gradient(90deg,var(--cc-sky-deep),var(--cc-sky),var(--cc-orange));
+    box-shadow: 0 0 10px rgba(56,189,248,.45);
+    will-change: transform;
+  }
+  .cc-landing .cc-promo {
+    min-height: 52px;
+    padding: 0;
+    overflow: hidden;
+    justify-content: flex-start;
+    white-space: nowrap;
+  }
+  .cc-landing .cc-promo-track {
+    display: flex;
+    width: max-content;
+    animation: cc-promo-loop 20s linear infinite;
+    will-change: transform;
+  }
+  .cc-landing .cc-promo-group,
+  .cc-landing .cc-promo div:not(:first-child) {
+    display: flex;
+  }
+  .cc-landing .cc-promo-group {
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    padding-right: 24px;
+  }
+  .cc-landing .cc-promo-group span {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cc-landing .cc-promo-group span:not(:last-child)::after {
+    content: '';
+    width: 5px;
+    height: 5px;
+    margin-inline: 18px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .7;
+  }
+  @keyframes cc-promo-loop {
+    from { transform: translate3d(0,0,0); }
+    to { transform: translate3d(-50%,0,0); }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cc-landing .cc-promo:hover .cc-promo-track {
+      animation-play-state: paused;
+    }
+  }
+  .cc-landing .cc-section {
+    padding-block: clamp(48px,5.5vw,82px);
+  }
+  .cc-landing .cc-heading {
+    margin-bottom: 30px;
+  }
+  .cc-landing .cc-heading h2 {
+    margin-bottom: 12px;
+  }
+  .cc-landing .cc-pain-grid,
+  .cc-landing .cc-material-grid,
+  .cc-landing .cc-guarantee-grid {
+    gap: 14px;
+  }
+  .cc-landing .cc-card-media,
+  .cc-landing .cc-video-card {
+    min-height: 270px;
+  }
+  .cc-landing .cc-card-copy {
+    padding: 18px;
+  }
+  .cc-landing .cc-contour {
+    gap: 22px;
+  }
+  .cc-landing .cc-product-stage {
+    height: 410px;
+  }
+  .cc-landing .cc-callouts {
+    gap: 42px;
+  }
+  .cc-landing .cc-callouts > div {
+    gap: 7px;
+  }
+  .cc-landing .cc-meter {
+    display: block;
+    width: 100%;
+    height: 7px;
+    margin-top: 5px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e5e0d8;
+  }
+  .cc-landing .cc-meter > i {
+    display: block;
+    width: var(--cc-progress);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,var(--cc-sky-deep),var(--cc-sky));
+  }
+  .cc-landing .cc-material-grid article {
+    min-height: 250px;
+  }
+  .cc-landing .cc-material-grid article > div {
+    padding: 26px;
+  }
+  .cc-landing .cc-center {
+    margin-top: 20px;
+  }
+  .cc-landing .cc-lifestyle {
+    height: 520px;
+  }
+  .cc-landing .cc-lifestyle-copy {
+    padding-top: 72px;
+  }
+  .cc-landing .cc-care,
+  .cc-landing .cc-specs,
+  .cc-landing .cc-offer {
+    gap: 44px;
+  }
+  .cc-landing .cc-feature {
+    margin-top: 20px;
+  }
+  .cc-landing .cc-care-media,
+  .cc-landing .cc-spec-image {
+    height: 470px;
+  }
+  .cc-landing .cc-use-grid article {
+    padding-block: 30px;
+  }
+  .cc-landing .cc-offer-gallery > img,
+  .cc-landing .cc-offer-gallery > .cc-placeholder {
+    height: 480px;
+  }
+  .cc-landing .cc-guarantee-grid article {
+    padding: 28px;
+    transition: transform .25s ease,border-color .25s ease,box-shadow .25s ease,background-color .25s ease;
+  }
+  .cc-landing .cc-guarantee-grid .cc-round-icon {
+    margin-inline: auto;
+    transition: transform .3s cubic-bezier(.2,.75,.25,1.25),box-shadow .25s ease;
+  }
+  .cc-landing .cc-guarantee-grid article h3,
+  .cc-landing .cc-guarantee-grid article p {
+    text-align: center;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cc-landing .cc-guarantee-grid article:hover {
+      transform: translateY(-8px);
+      border-color: rgba(56,189,248,.52);
+      background: #fff;
+      box-shadow: 0 18px 42px rgba(31,38,34,.12);
+    }
+    .cc-landing .cc-guarantee-grid article:hover .cc-round-icon {
+      transform: scale(1.1) rotate(-3deg);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.14),0 14px 30px rgba(56,189,248,.28);
+    }
+  }
+  .cc-landing .cc-footer {
+    padding-block: 36px;
+  }
+  .cc-landing .cc-inline-instant {
+    background: #fff;
+  }
+  .cc-landing .cc-inline-instant-grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 30px;
+  }
+  .cc-landing .cc-inline-instant-grid > article {
+    min-width: 0;
+    text-align: center;
+  }
+  .cc-landing .cc-inline-instant-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    aspect-ratio: 4/3;
+    background: var(--cc-sky-soft);
+  }
+  .cc-landing .cc-inline-instant-media > img,
+  .cc-landing .cc-inline-instant-media > svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s cubic-bezier(.22,1,.36,1);
+  }
+  .cc-landing .cc-inline-instant-grid h3 {
+    min-height: 0;
+    margin: 16px 0 10px;
+    color: #111826;
+    font-size: 1.4rem;
+    line-height: 1.2;
+  }
+  .cc-landing .cc-inline-instant-grid article > p {
+    max-width: 500px;
+    margin: 0 auto;
+    color: #667180;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .cc-landing .cc-pain-grid .cc-media-card {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: 520px;
+    aspect-ratio: 9/16;
+    isolation: isolate;
+  }
+  .cc-landing .cc-pain-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    align-items: stretch;
+  }
+  .cc-landing .cc-pain-grid .cc-video-card {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: 520px;
+    aspect-ratio: 9/16;
+    align-self: stretch;
+  }
+  .cc-landing .cc-pain-grid .cc-media-card::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 35% 0 0;
+    pointer-events: none;
+    background: linear-gradient(180deg,transparent,rgba(5,10,18,.9));
+  }
+  .cc-landing .cc-pain-grid .cc-card-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .cc-landing .cc-pain-grid .cc-card-media > img,
+  .cc-landing .cc-pain-grid .cc-card-media > svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s cubic-bezier(.22,1,.36,1);
+  }
+  .cc-landing .cc-pain-grid .cc-card-copy {
+    display: grid;
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    grid-template-columns: 44px minmax(0,1fr);
+    gap: 8px 12px;
+    padding: 22px;
+    color: #fff;
+  }
+  .cc-landing .cc-pain-grid .cc-card-copy .cc-icon {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    float: none;
+    border: 2px solid rgba(255,255,255,.7);
+    border-radius: 10px;
+  }
+  .cc-landing .cc-pain-grid .cc-card-copy h3 {
+    min-height: 0;
+    margin: 0;
+    grid-column: 2;
+    align-self: center;
+    color: #fff;
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+  .cc-landing .cc-pain-grid .cc-card-copy p {
+    margin: 0;
+    grid-column: 1 / -1;
+    color: rgba(255,255,255,.86);
+    font-size: .9rem;
+    line-height: 1.45;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cc-landing .cc-inline-instant-grid article:hover .cc-inline-instant-media > img,
+    .cc-landing .cc-inline-instant-grid article:hover .cc-inline-instant-media > svg {
+      transform: scale(1.045);
+    }
+    .cc-landing .cc-pain-grid .cc-media-card:hover .cc-card-media > img,
+    .cc-landing .cc-pain-grid .cc-media-card:hover .cc-card-media > svg {
+      transform: scale(1.055);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .cc-landing .cc-section {
+      padding-block: 42px;
+    }
+    .cc-landing .cc-heading {
+      margin-bottom: 24px;
+    }
+    .cc-landing .cc-heading > p:last-child {
+      font-size: 1rem;
+    }
+    .cc-landing .cc-card-media {
+      min-height: 155px;
+    }
+    .cc-landing .cc-video-card {
+      min-height: 220px;
+    }
+    .cc-landing .cc-card-copy {
+      padding: 14px;
+    }
+    .cc-landing .cc-contour {
+      gap: 18px;
+    }
+    .cc-landing .cc-product-stage {
+      height: 300px;
+    }
+    .cc-landing .cc-callouts {
+      gap: 16px;
+    }
+    .cc-landing .cc-meter {
+      height: 6px;
+    }
+    .cc-landing .cc-material-grid article {
+      min-height: 170px;
+    }
+    .cc-landing .cc-material-grid article > div {
+      padding: 16px;
+    }
+    .cc-landing .cc-lifestyle {
+      height: 440px;
+    }
+    .cc-landing .cc-lifestyle-copy {
+      padding-top: 54px;
+    }
+    .cc-landing .cc-care,
+    .cc-landing .cc-specs,
+    .cc-landing .cc-offer {
+      gap: 22px;
+    }
+    .cc-landing .cc-care-media,
+    .cc-landing .cc-spec-image {
+      height: 320px;
+    }
+    .cc-landing .cc-use-grid article {
+      padding-block: 22px;
+    }
+    .cc-landing .cc-offer-gallery > img,
+    .cc-landing .cc-offer-gallery > .cc-placeholder {
+      height: 330px;
+    }
+    .cc-landing .cc-guarantee-grid article {
+      padding: 24px;
+    }
+    .cc-landing .cc-footer {
+      padding-block: 30px;
+    }
+    .cc-landing .cc-inline-instant-grid {
+      grid-template-columns: 1fr;
+      gap: 42px;
+    }
+    .cc-landing .cc-inline-instant-media {
+      border-radius: 14px;
+    }
+    .cc-landing .cc-inline-instant-grid h3 {
+      margin-top: 13px;
+      font-size: 1.25rem;
+    }
+    .cc-landing .cc-inline-instant-grid article > p {
+      padding-inline: 10px;
+      font-size: .875rem;
+    }
+    .cc-landing .cc-pain-grid .cc-media-card {
+      min-height: 0;
+      max-height: none;
+      aspect-ratio: 9/16;
+    }
+    .cc-landing .cc-pain-grid {
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      align-items: start;
+    }
+    .cc-landing .cc-pain-grid .cc-video-card {
+      min-height: 220px;
+      max-height: none;
+      aspect-ratio: 16/10;
+      grid-column: 1 / -1;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy {
+      grid-template-columns: 34px minmax(0,1fr);
+      gap: 7px 9px;
+      padding: 13px;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy .cc-icon {
+      display: block;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy h3 {
+      font-size: .88rem;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy p {
+      display: block;
+      font-size: .7rem;
+      line-height: 1.35;
+    }
+  }
+
+  .cc-landing .cc-faq details {
+    overflow: clip;
+    padding: 0;
+    border: 1px solid var(--cc-line);
+    border-bottom: 0;
+    background: #fff;
+    transition: border-color .2s ease,background-color .2s ease,box-shadow .2s ease;
+  }
+  .cc-landing .cc-faq details:first-of-type {
+    border-radius: 14px 14px 0 0;
+  }
+  .cc-landing .cc-faq details:last-child {
+    border-bottom: 1px solid var(--cc-line);
+    border-radius: 0 0 14px 14px;
+  }
+  .cc-landing .cc-faq details[open] {
+    position: relative;
+    z-index: 1;
+    border-color: rgba(56,189,248,.7);
+    background: var(--cc-sky-soft);
+    box-shadow: 0 8px 24px rgba(17,24,38,.08);
+  }
+  .cc-landing .cc-faq summary {
+    display: flex;
+    min-height: 62px;
+    padding: 18px 56px 18px 20px;
+    position: relative;
+    align-items: center;
+    color: #111826;
+    list-style: none;
+    line-height: 1.4;
+    cursor: pointer;
+    user-select: none;
+    transition: color .2s ease,background-color .2s ease;
+  }
+  .cc-landing .cc-faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .cc-landing .cc-faq summary::after {
+    content: '+';
+    display: grid;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    place-items: center;
+    border-radius: 50%;
+    background: #38bdf8;
+    color: #111826;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1;
+    transform: translateY(-50%) rotate(0);
+    transition: transform .28s cubic-bezier(.22,1,.36,1),background-color .2s ease,color .2s ease;
+  }
+  .cc-landing .cc-faq details[open] summary::after {
+    background: #111826;
+    color: #fff;
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .cc-landing .cc-faq details > p {
+    height: auto;
+    margin: 0;
+    padding: 0 56px 22px 20px;
+    overflow: hidden;
+    color: #536273;
+    line-height: 1.65;
+  }
+  .cc-landing .cc-faq summary:focus-visible {
+    z-index: 2;
+    outline: 3px solid rgba(56,189,248,.48);
+    outline-offset: -3px;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cc-landing .cc-faq details:not([open]):hover {
+      border-color: rgba(56,189,248,.58);
+      background: #f7fcff;
+    }
+    .cc-landing .cc-faq details:not([open]):hover summary::after {
+      transform: translateY(-50%) scale(1.08);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .cc-landing .cc-faq summary {
+      min-height: 58px;
+      padding: 15px 50px 15px 16px;
+      font-size: .9rem;
+    }
+    .cc-landing .cc-faq summary::after {
+      right: 14px;
+      width: 28px;
+      height: 28px;
+    }
+    .cc-landing .cc-faq details > p {
+      padding: 0 16px 18px;
+      font-size: .88rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cc-landing .cc-marquee,
+    .cc-landing .cc-promo-track { animation: none; }
+    .cc-landing .cc-pain-grid .cc-card-media > img,
+    .cc-landing .cc-pain-grid .cc-card-media > svg,
+    .cc-landing .cc-inline-instant-media > img,
+    .cc-landing .cc-inline-instant-media > svg {
+      transition: none;
+    }
+  }
+
+  .cc-landing .cc-offer-gallery {
+    min-width: 0;
+  }
+  .cc-landing .cc-offer-main-media {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: 520px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #f7f8fa;
+  }
+  .cc-landing .cc-offer-main-media .cc-offer-main-image {
+    width: 100%;
+    height: 100%;
+    padding: clamp(14px, 3vw, 28px);
+    object-fit: contain;
+    object-position: center;
+    box-sizing: border-box;
+    will-change: opacity, transform;
+  }
+  .cc-landing .cc-thumbs {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    overflow-x: auto;
+    padding: 2px 2px 10px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+  .cc-landing .cc-thumb {
+    flex: 0 0 76px;
+    aspect-ratio: 1;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: #f7f8fa;
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .cc-landing .cc-thumb.is-active {
+    border-color: #38bdf8;
+    box-shadow: 0 4px 14px rgba(56,189,248,.24);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cc-landing .cc-thumb:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56,189,248,.55);
+    }
+  }
+  .cc-landing .cc-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Show content media in full without cropping; hero/lifestyle backgrounds still cover their sections. */
+  .cc-landing .cc-card-media > img,
+  .cc-landing .cc-card-media > svg,
+  .cc-landing .cc-video-card > video,
+  .cc-landing .cc-video-card > img,
+  .cc-landing .cc-inline-instant-media > img,
+  .cc-landing .cc-inline-instant-media > svg,
+  .cc-landing .cc-care-media > img,
+  .cc-landing .cc-care-media > svg,
+  .cc-landing .cc-spec-image > img,
+  .cc-landing .cc-spec-image > svg,
+  .cc-landing .cc-product-stage > img,
+  .cc-landing .cc-product-stage > svg,
+  .cc-landing .cc-material-grid img,
+  .cc-landing .cc-round-icon img,
+  .cc-landing .cc-icon img,
+  .cc-landing .cc-footer-icon img {
+    object-fit: contain;
+    object-position: center;
+  }
+  .cc-landing .cc-card-media,
+  .cc-landing .cc-video-card,
+  .cc-landing .cc-inline-instant-media,
+  .cc-landing .cc-care-media,
+  .cc-landing .cc-spec-image,
+  .cc-landing .cc-product-stage,
+  .cc-landing .cc-thumb {
+    background: #f7f8fa;
+  }
+  @media (max-width: 749px) {
+    .cc-landing .cc-offer-gallery {
+      padding: 14px;
+    }
+    .cc-landing .cc-offer-main-media {
+      max-height: none;
+    }
+    .cc-landing .cc-offer-main-media .cc-offer-main-image {
+      padding: 12px;
+    }
+    .cc-landing .cc-thumbs {
+      display: flex;
+      gap: 7px;
+      margin-top: 10px;
+    }
+    .cc-landing .cc-thumb {
+      flex-basis: 68px;
+    }
+  }
+
+  #cc-product-{{ section.id }} {
+    --product-accent: #38BDF8;
+    --product-dark: #111826;
+    --product-background: #F4F9FC;
+    --product-card: #FFFFFF;
+    --product-border: #D9E7F0;
+    --product-accent-soft: rgba(56, 189, 248, 0.10);
+    --product-accent-medium: rgba(56, 189, 248, 0.20);
+    --product-text-muted: rgba(17, 24, 38, 0.68);
+    width: 100%;
+    padding: 24px max(20px, calc((100vw - 1360px) / 2));
+    overflow: clip;
+    background: var(--product-background);
+    color: var(--product-dark);
+  }
+  #cc-product-{{ section.id }} * { box-sizing: border-box; }
+  #cc-product-{{ section.id }} .cc-product-anchor { position: absolute; translate: 0 -90px; }
+  #cc-product-{{ section.id }} button,
+  #cc-product-{{ section.id }} input { font: inherit; }
+  #cc-product-{{ section.id }} .cc-product-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+    gap: clamp(24px, 2.3vw, 32px);
+    width: 100%;
+    max-width: 1360px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  #cc-product-{{ section.id }} .cc-product-gallery,
+  #cc-product-{{ section.id }} .cc-product-info {
+    min-width: 0;
+    padding: clamp(16px, 2vw, 24px);
+    border: 1px solid var(--product-border);
+    border-radius: 12px;
+    background: var(--product-card);
+    box-shadow: 0 4px 20px rgba(17, 24, 38, 0.06);
+  }
+  #cc-product-{{ section.id }} .cc-product-gallery {
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr);
+    gap: 14px;
+  }
+  #cc-product-{{ section.id }} .cc-product-gallery.no-media { grid-template-columns: minmax(0, 1fr); }
+  #cc-product-{{ section.id }} .cc-product-gallery.no-media .cc-product-thumbnails { display: none; }
+  #cc-product-{{ section.id }} .cc-product-thumbnails {
+    display: flex;
+    max-height: min(520px, calc(100vh - 120px));
+    flex-direction: column;
+    gap: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #cc-product-{{ section.id }} .cc-product-thumbnail {
+    display: grid;
+    flex: 0 0 66px;
+    width: 66px;
+    height: 66px;
+    padding: 3px;
+    position: relative;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--product-border);
+    border-radius: 8px;
+    background: var(--product-card);
+    cursor: pointer;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  #cc-product-{{ section.id }} .cc-product-thumbnail:hover,
+  #cc-product-{{ section.id }} .cc-product-thumbnail.is-active { border-color: var(--product-accent); }
+  #cc-product-{{ section.id }} .cc-product-thumbnail.is-active {
+    border-width: 2px;
+    box-shadow: 0 0 0 2px var(--product-accent-soft);
+  }
+  #cc-product-{{ section.id }} .cc-product-thumbnail img,
+  #cc-product-{{ section.id }} .cc-product-thumbnail video { width: 100%; height: 100%; object-fit: contain; }
+  #cc-product-{{ section.id }} .cc-product-play {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    position: absolute;
+    inset: 50% auto auto 50%;
+    place-items: center;
+    border-radius: 50%;
+    translate: -50% -50%;
+    background: var(--product-accent);
+    color: #fff;
+    font-size: 10px;
+  }
+  #cc-product-{{ section.id }} .cc-product-media-stage {
+    display: grid;
+    width: 100%;
+    aspect-ratio: 1;
+    position: relative;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--product-border);
+    border-radius: 10px;
+    background: var(--product-card);
+  }
+  #cc-product-{{ section.id }} .cc-product-media {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: clamp(10px, 2vw, 22px);
+    place-items: center;
+  }
+  #cc-product-{{ section.id }} .cc-product-media.is-active { display: grid; animation: cc-product-in .34s cubic-bezier(.22,1,.36,1); }
+  #cc-product-{{ section.id }} .cc-product-media-empty { align-content: center; color: var(--product-text-muted); text-align: center; }
+  #cc-product-{{ section.id }} .cc-product-media-empty svg { width: min(70%, 360px); height: auto; margin: 0 auto; }
+  #cc-product-{{ section.id }} .cc-product-media-empty p { margin: 12px 0 0; }
+  #cc-product-{{ section.id }} .cc-product-media img,
+  #cc-product-{{ section.id }} .cc-product-media video,
+  #cc-product-{{ section.id }} .cc-product-media iframe,
+  #cc-product-{{ section.id }} .cc-product-media model-viewer { width: 100%; height: 100%; object-fit: contain; border: 0; }
+  #cc-product-{{ section.id }} .cc-product-media[data-media-type="image"] img { cursor: zoom-in; transition: transform .35s cubic-bezier(.22,1,.36,1); }
+  @media (hover: hover) and (pointer: fine) { #cc-product-{{ section.id }} .cc-product-media[data-media-type="image"]:hover img { transform: scale(1.045); } }
+  #cc-product-{{ section.id }} .cc-product-zoom,
+  #cc-product-{{ section.id }} .cc-product-counter {
+    position: absolute;
+    right: 12px;
+    border: 1px solid var(--product-border);
+    background: rgba(255,255,255,.92);
+    color: var(--product-dark);
+  }
+  #cc-product-{{ section.id }} .cc-product-zoom { display: grid; width: 40px; height: 40px; top: 12px; place-items: center; border-radius: 50%; cursor: pointer; font-size: 22px; }
+  #cc-product-{{ section.id }} .cc-product-counter { bottom: 12px; padding: 5px 9px; border-radius: 99px; font-size: 12px; }
+  #cc-product-{{ section.id }} .cc-product-heading h2 { min-height: 0; margin: 0; color: var(--product-dark); font-size: clamp(18px, 1.7vw, 22px); line-height: 1.3; font-weight: 700; }
+  #cc-product-{{ section.id }} .cc-product-rating { display: flex; gap: 7px; margin-top: 9px; align-items: center; flex-wrap: wrap; color: var(--product-text-muted); font-size: 14px; }
+  #cc-product-{{ section.id }} .cc-product-stars { display: inline-flex; letter-spacing: 1px; }
+  #cc-product-{{ section.id }} .cc-product-stars > span {
+    color: transparent;
+    background: linear-gradient(90deg, var(--product-accent) 0 var(--rating-width), var(--product-border) var(--rating-width) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+  #cc-product-{{ section.id }} .cc-product-rating a { color: var(--product-accent); text-decoration: none; }
+  #cc-product-{{ section.id }} .cc-product-rating strong { color: var(--product-dark); }
+  #cc-product-{{ section.id }} .cc-product-rating > strong {
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--product-accent-soft);
+    color: var(--product-accent);
+  }
+  #cc-product-{{ section.id }} .cc-product-sold {
+    padding: 3px 7px;
+    border: 1px solid var(--product-accent-medium);
+    border-radius: 99px;
+    background: var(--product-accent-soft);
+    color: var(--product-dark);
+    font-weight: 700;
+  }
+  #cc-product-{{ section.id }} .cc-product-separator { color: var(--product-border); }
+  #cc-product-{{ section.id }} .cc-product-purchase { margin-top: 16px; }
+  #cc-product-{{ section.id }} .cc-product-promo-head { display: flex; min-height: 46px; padding: 10px 14px; align-items: center; justify-content: space-between; gap: 14px; border-radius: 7px 7px 0 0; background: var(--product-accent); color: var(--product-dark); font-size: 13px; }
+  #cc-product-{{ section.id }} .cc-product-promo-head strong { font-weight: 800; }
+  #cc-product-{{ section.id }} .cc-product-price-box { padding: 13px 14px; border: 1px solid var(--product-accent); border-top: 0; border-radius: 0 0 7px 7px; background: var(--product-card); }
+  #cc-product-{{ section.id }} .cc-product-price-box.no-promo { border-top: 1px solid var(--product-accent); border-radius: 7px; }
+  #cc-product-{{ section.id }} .cc-product-price-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  #cc-product-{{ section.id }} .cc-product-current-price { color: var(--product-dark); font-size: clamp(36px, 4vw, 42px); line-height: 1; font-weight: 800; }
+  #cc-product-{{ section.id }} .cc-product-old-price { display: block; margin-top: 5px; color: rgba(17,24,38,.45); font-size: 14px; }
+  #cc-product-{{ section.id }} .cc-product-save { padding: 5px 8px; border: 1px solid rgba(56,189,248,.35); border-radius: 5px; background: rgba(56,189,248,.14); color: var(--product-dark); font-size: 13px; font-weight: 700; }
+  #cc-product-{{ section.id }} .is-hidden { display: none !important; }
+  #cc-product-{{ section.id }} .cc-product-extra { margin: 7px 0 0; color: var(--product-text-muted); font-size: 13px; }
+  #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 10px; border: 1px solid rgba(56,189,248,.25); border-radius: 7px; background: var(--product-accent-soft); }
+  #cc-product-{{ section.id }} .cc-product-coupon summary { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding: 11px 12px; align-items: center; color: var(--product-dark); cursor: pointer; list-style: none; }
+  #cc-product-{{ section.id }} .cc-product-coupon summary > span { color: var(--product-accent); }
+  #cc-product-{{ section.id }} .cc-product-coupon > div { padding: 0 38px 12px; color: var(--product-text-muted); font-size: 13px; }
+  #cc-product-{{ section.id }} .cc-product-coupon:hover { background: rgba(56,189,248,.17); }
+  #cc-product-{{ section.id }} .cc-product-divider { margin: 16px 0; border-top: 1px solid var(--product-border); }
+  #cc-product-{{ section.id }} .cc-product-form-new { display: grid; gap: 16px; }
+  #cc-product-{{ section.id }} .cc-product-option { min-width: 0; margin: 0; padding: 0; border: 0; }
+  #cc-product-{{ section.id }} .cc-product-option legend { margin-bottom: 9px; color: var(--product-dark); font-size: 15px; font-weight: 600; }
+  #cc-product-{{ section.id }} .cc-product-option-values { display: flex; gap: 10px; flex-wrap: wrap; }
+  #cc-product-{{ section.id }} .cc-product-option-value { display: grid; min-width: 62px; min-height: 44px; padding: 5px 9px; position: relative; place-items: center; gap: 4px; border: 1px solid var(--product-border); border-radius: 8px; background: var(--product-card); color: var(--product-dark); cursor: pointer; font-size: 12px; }
+  #cc-product-{{ section.id }} .cc-product-option-value img { width: 54px; height: 54px; object-fit: contain; }
+  #cc-product-{{ section.id }} .cc-product-option-value:hover,
+  #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-color: var(--product-accent); }
+  #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-width: 2px; background: var(--product-accent-soft); }
+  #cc-product-{{ section.id }} .cc-product-option-value.is-selected::after { content: '✓'; display: grid; width: 17px; height: 17px; position: absolute; top: -7px; right: -7px; place-items: center; border-radius: 50%; background: var(--product-accent); color: #fff; font-size: 10px; }
+  #cc-product-{{ section.id }} .cc-product-option-value.is-unavailable { opacity: .45; cursor: not-allowed; }
+  #cc-product-{{ section.id }} .cc-product-option-value.is-unavailable::before { content: ''; width: 120%; height: 1px; position: absolute; background: var(--product-dark); rotate: -35deg; }
+  #cc-product-{{ section.id }} .cc-product-stock { display: flex; gap: 8px; align-items: center; color: var(--product-dark); font-size: 14px; }
+  #cc-product-{{ section.id }} .cc-product-stock > span { width: 9px; height: 9px; border-radius: 50%; background: var(--product-accent); box-shadow: 0 0 0 4px var(--product-accent-soft); }
+  #cc-product-{{ section.id }} .cc-product-stock.is-sold-out > span { background: rgba(17,24,38,.5); box-shadow: none; }
+  #cc-product-{{ section.id }} .cc-product-quantity-wrap { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  #cc-product-{{ section.id }} .cc-product-quantity-wrap > label { font-weight: 600; }
+  #cc-product-{{ section.id }} .cc-product-quantity { display: grid; grid-template-columns: 42px 52px 42px; border: 1px solid var(--product-border); border-radius: 8px; overflow: hidden; background: var(--product-card); }
+  #cc-product-{{ section.id }} .cc-product-quantity button,
+  #cc-product-{{ section.id }} .cc-product-quantity input { height: 42px; padding: 0; border: 0; background: transparent; color: var(--product-dark); text-align: center; }
+  #cc-product-{{ section.id }} .cc-product-quantity button { cursor: pointer; }
+  #cc-product-{{ section.id }} .cc-product-quantity button:hover { background: var(--product-accent-soft); }
+  #cc-product-{{ section.id }} .cc-product-quantity input { border-inline: 1px solid var(--product-border); appearance: textfield; }
+  #cc-product-{{ section.id }} .cc-product-actions,
+  #cc-product-{{ section.id }} .cc-product-sticky { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #cc-product-{{ section.id }} .cc-product-add,
+  #cc-product-{{ section.id }} .cc-product-buy-now { min-height: 52px; padding: 0 16px; border-radius: 8px; color: var(--product-dark); font-weight: 800; cursor: pointer; }
+  #cc-product-{{ section.id }} .cc-product-add { border: 2px solid var(--product-accent); background: var(--product-card); }
+  #cc-product-{{ section.id }} .cc-product-add:hover { background: var(--product-accent-soft); }
+  #cc-product-{{ section.id }} .cc-product-buy-now { border: 2px solid var(--product-accent); background: var(--product-accent); }
+  #cc-product-{{ section.id }} .cc-product-buy-now:hover { border-color: var(--product-dark); background: var(--product-dark); color: #fff; }
+  #cc-product-{{ section.id }} .cc-product-payment-methods {
+    display: grid;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1px solid var(--product-border);
+    border-radius: 9px;
+    background: var(--product-card);
+    text-align: center;
+  }
+  #cc-product-{{ section.id }} .cc-product-payment-methods > span {
+    color: var(--product-text-muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  #cc-product-{{ section.id }} .cc-product-payment-methods > img {
+    width: 100%;
+    height: auto;
+    max-height: 38px;
+    margin: 0 auto;
+    object-fit: contain;
+  }
+  #cc-product-{{ section.id }} .cc-product-trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  #cc-product-{{ section.id }} .cc-product-trust-item {
+    display: grid;
+    min-width: 0;
+    min-height: 132px;
+    padding: 14px 8px 12px;
+    place-items: center;
+    align-content: center;
+    gap: 9px;
+    border: 1px solid var(--product-border);
+    border-radius: 10px;
+    background: var(--product-card);
+    box-shadow: 0 3px 14px rgba(17,24,38,.05);
+    text-align: center;
+    transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  #cc-product-{{ section.id }} .cc-product-trust-item > img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+  }
+  #cc-product-{{ section.id }} .cc-product-trust-item > strong {
+    color: var(--product-dark);
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    #cc-product-{{ section.id }} .cc-product-trust-item:hover {
+      border-color: var(--product-accent);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(17,24,38,.08);
+    }
+  }
+  #cc-product-{{ section.id }} button:focus-visible,
+  #cc-product-{{ section.id }} input:focus-visible,
+  #cc-product-{{ section.id }} summary:focus-visible { outline: 3px solid rgba(56,189,248,.35); outline-offset: 2px; }
+  #cc-product-{{ section.id }} button:disabled { opacity: .45; cursor: not-allowed; }
+  #cc-product-{{ section.id }} .cc-product-sticky { display: none; }
+  #cc-product-{{ section.id }} .cc-product-lightbox { width: min(92vw, 1100px); height: min(92vh, 900px); padding: 44px 16px 16px; border: 1px solid var(--product-border); border-radius: 12px; background: var(--product-card); }
+  #cc-product-{{ section.id }} .cc-product-lightbox::backdrop { background: rgba(17,24,38,.72); }
+  #cc-product-{{ section.id }} .cc-product-lightbox > button { position: absolute; top: 8px; right: 12px; border: 0; background: transparent; color: var(--product-dark); cursor: pointer; font-size: 30px; }
+  #cc-product-{{ section.id }} .cc-product-lightbox > div,
+  #cc-product-{{ section.id }} .cc-product-lightbox img { width: 100%; height: 100%; object-fit: contain; }
+  @keyframes cc-product-in { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
+
+  @media (max-width: 749px) {
+    #cc-product-{{ section.id }} { padding: 12px 14px calc(92px + env(safe-area-inset-bottom)); overflow: hidden; }
+    #cc-product-{{ section.id }} .cc-product-layout { display: flex; flex-direction: column; gap: 12px; }
+    #cc-product-{{ section.id }} .cc-product-info { display: contents; }
+    #cc-product-{{ section.id }} .cc-product-heading { order: 1; padding: 15px; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
+    #cc-product-{{ section.id }} .cc-product-gallery { order: 2; display: flex; padding: 12px; flex-direction: column-reverse; gap: 8px; }
+    #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 14px; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
+    #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 18px; }
+    #cc-product-{{ section.id }} .cc-product-rating { font-size: 13px; }
+    #cc-product-{{ section.id }} .cc-product-thumbnails { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; }
+    #cc-product-{{ section.id }} .cc-product-thumbnails::-webkit-scrollbar { display: none; }
+    #cc-product-{{ section.id }} .cc-product-thumbnail { flex-basis: 58px; width: 58px; height: 58px; scroll-snap-align: start; }
+    #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; }
+    #cc-product-{{ section.id }} .cc-product-media { padding: 10px; }
+    #cc-product-{{ section.id }} .cc-product-current-price { font-size: 34px; }
+    #cc-product-{{ section.id }} .cc-product-promo-head { align-items: flex-start; flex-wrap: wrap; }
+    #cc-product-{{ section.id }} .cc-product-option-values { flex-wrap: nowrap; overflow-x: auto; padding: 2px 8px 8px 2px; scrollbar-width: none; }
+    #cc-product-{{ section.id }} .cc-product-option-values::-webkit-scrollbar { display: none; }
+    #cc-product-{{ section.id }} .cc-product-option-value { flex: 0 0 62px; }
+    #cc-product-{{ section.id }} .cc-product-actions { display: none; }
+    #cc-product-{{ section.id }} .cc-product-trust-grid { gap: 7px; }
+    #cc-product-{{ section.id }} .cc-product-trust-item { min-height: 116px; padding: 11px 5px 9px; }
+    #cc-product-{{ section.id }} .cc-product-trust-item > img { width: 48px; height: 48px; }
+    #cc-product-{{ section.id }} .cc-product-trust-item > strong { font-size: 10px; }
+    #cc-product-{{ section.id }} .cc-product-sticky { display: grid; position: fixed; z-index: 1000; right: 0; bottom: 0; left: 0; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--product-border); background: var(--product-card); box-shadow: 0 -4px 18px rgba(17,24,38,.08); opacity: 0; visibility: hidden; transform: translateY(100%); transition: opacity .22s ease, visibility .22s ease, transform .22s ease; }
+    #cc-product-{{ section.id }} .cc-product-sticky.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+    #cc-product-{{ section.id }} .cc-product-sticky button { min-height: 50px; }
+  }
+
+  /* Vertical autoplay video in the driving-pain section. */
+  .cc-landing .cc-pain-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+  .cc-landing .cc-pain-grid .cc-media-card,
+  .cc-landing .cc-pain-grid .cc-video-card {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 4 / 5;
+    align-self: stretch;
+  }
+  .cc-landing .cc-pain-grid .cc-video-card {
+    background: #111826;
+  }
+  .cc-landing .cc-pain-grid .cc-video-card .cc-pain-hover-video {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    object-position: center;
+  }
+  .cc-landing .cc-pain-grid .cc-video-card .cc-play,
+  .cc-landing .cc-pain-grid .cc-video-card video::-webkit-media-controls {
+    display: none !important;
+  }
+  @media (max-width: 749px) {
+    .cc-landing .cc-pain-grid .cc-video-card {
+      grid-column: 1 / -1;
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  .cc-landing.cc-reveal-ready [data-scroll-reveal] {
+    transition-property: opacity, translate, scale;
+    transition-duration: .65s;
+    transition-delay: var(--reveal-delay, 0ms);
+    transition-timing-function: cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, translate, scale;
+  }
+  .cc-landing.cc-reveal-ready [data-scroll-reveal]:not(.is-visible) {
+    opacity: 0;
+    translate: 0 28px;
+    scale: .985;
+  }
+  .cc-landing.cc-reveal-ready [data-scroll-reveal].is-visible {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+  @media (max-width: 749px) {
+    .cc-landing.cc-reveal-ready [data-scroll-reveal]:not(.is-visible) {
+      translate: 0 20px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cc-landing.cc-reveal-ready [data-scroll-reveal] {
+      opacity: 1 !important;
+      translate: none !important;
+      scale: none !important;
+      transition: none !important;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Car comfort landing",
+  "tag": "section",
+  "class": "car-comfort-landing-section",
+  "settings": [
+    {"type":"text","id":"brand_name","label":"Brand name","default":"DRIVE EASE"},
+    {"type":"text","id":"hero_heading","label":"Hero heading","default":"Drive Longer. Arrive Better."},
+    {"type":"textarea","id":"hero_text","label":"Hero text","default":"3D contoured memory-foam cushions support your neck and lower back for a more comfortable, relaxed drive."},
+    {"type":"product","id":"product","label":"Shopify product"},
+    {"type":"header","content":"Product section"},
+    {"type":"checkbox","id":"show_reviews","label":"Show reviews","default":true},
+    {"type":"range","id":"rating_score","label":"Rating score","min":1,"max":5,"step":0.1,"default":5},
+    {"type":"text","id":"review_count","label":"Review count","default":"81"},
+    {"type":"checkbox","id":"show_sold_count","label":"Show sold count","default":true},
+    {"type":"text","id":"sold_count","label":"Sold count","default":"13,475"},
+    {"type":"checkbox","id":"show_promotion","label":"Show promotion bar","default":true},
+    {"type":"text","id":"promotion_title","label":"Promotion title","default":"WELCOME OFFER · Limited-time deal"},
+    {"type":"checkbox","id":"show_countdown","label":"Show promotion end time","default":true},
+    {"type":"text","id":"promotion_end","label":"Promotion end text","default":"Ends soon"},
+    {"type":"range","id":"countdown_hours","label":"Countdown hours","min":1,"max":72,"step":1,"default":8},
+    {"type":"text","id":"extra_offer","label":"Additional offer","default":"Free shipping available"},
+    {"type":"checkbox","id":"show_coupon","label":"Show coupon","default":true},
+    {"type":"text","id":"coupon_label","label":"Coupon label","default":"View available coupons"},
+    {"type":"textarea","id":"coupon_details","label":"Coupon details","default":"Apply the available discount code at checkout."},
+    {"type":"checkbox","id":"show_variant_thumbnails","label":"Show variant thumbnails","default":true},
+    {"type":"checkbox","id":"show_quantity","label":"Show quantity selector","default":true},
+    {"type":"checkbox","id":"show_sticky_mobile","label":"Show sticky mobile purchase bar","default":true},
+    {"type":"header","content":"Landing media"},
+    {"type":"image_picker","id":"hero_image","label":"Hero lifestyle image"},
+    {"type":"image_picker","id":"pain_image_1","label":"Shoulder and back strain image"},
+    {"type":"image_picker","id":"pain_image_2","label":"Neck pain image"},
+    {"type":"video","id":"pain_video","label":"Driving problem video"},
+    {"type":"image_picker","id":"video_cover","label":"Video fallback cover"},
+    {"type":"image_picker","id":"contour_image","label":"3D contour product image"},
+    {"type":"image_picker","id":"material_image_1","label":"Adaptive rebound image"},
+    {"type":"image_picker","id":"material_image_2","label":"Plush material image"},
+    {"type":"image_picker","id":"comfort_image","label":"Comfort lifestyle image"},
+    {"type":"image_picker","id":"care_image","label":"Washable cover image"},
+    {"type":"image_picker","id":"spec_image","label":"Product specification image"}
+  ],
+  "presets": [{"name":"Car comfort landing"}]
+}
+{% endschema %}

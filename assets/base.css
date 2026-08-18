@@ -4213,3 +4213,22 @@ product-recommendations:has([data-has-recommendations='false']) {
     translate: 0px var(--atc-destination, 0px);
   }
 }
+
+/* Keep typography consistent across theme sections, app blocks, and form controls. */
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body--family, Inter, sans-serif);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading--family, Inter, sans-serif);
+}

@@ -36,7 +36,7 @@
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
-    {% unless request.page_type == 'index' or template.suffix == 'car-comfort' %}
+    {% unless request.page_type == 'index' or request.page_type == 'product' or template.suffix == 'car-comfort' %}
       <div id="header-group">
         {% sections 'header-group' %}
       </div>
@@ -121,7 +121,7 @@
       {{ content_for_layout }}
     </main>
 
-    {% unless request.page_type == 'index' or template.suffix == 'car-comfort' %}
+    {% unless request.page_type == 'index' or request.page_type == 'product' or template.suffix == 'car-comfort' %}
       <footer>
         {% sections 'footer-group' %}
       </footer>

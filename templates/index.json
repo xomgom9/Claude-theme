@@ -11,8 +11,32 @@
   "sections": {
     "main": {
       "type": "car-comfort-landing",
-      "settings": {}
+      "settings": {
+        "brand_name": "DRIVE EASE",
+        "hero_heading": "Drive Longer. Arrive Better.",
+        "hero_text": "3D contoured memory-foam cushions support your neck and lower back for a more comfortable, relaxed drive.",
+        "product": "car-neck-cushion-memory-foam-car-lumbar-support-for-car-supplies-universal-neck-pillow-waist-cushion-car-seat-car-assesories",
+        "show_reviews": true,
+        "rating_score": 5,
+        "review_count": "81",
+        "show_sold_count": true,
+        "sold_count": "13,475",
+        "show_promotion": true,
+        "promotion_title": "WELCOME OFFER · Limited-time deal",
+        "show_countdown": true,
+        "promotion_end": "Ends soon",
+        "countdown_hours": 8,
+        "extra_offer": "Free shipping available",
+        "show_coupon": true,
+        "coupon_label": "View available coupons",
+        "coupon_details": "Apply the available discount code at checkout.",
+        "show_variant_thumbnails": true,
+        "show_quantity": true,
+        "show_sticky_mobile": true
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }

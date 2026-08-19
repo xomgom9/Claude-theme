@@ -354,7 +354,19 @@
                 </div>
                 <div class="cc-product-payment-methods">
                   <span>Secure payment methods</span>
-                  <img src="{{ 'visa-mastercard-amex-paypal.jpg' | asset_url }}" width="2570" height="197" loading="lazy" alt="Accepted payment methods including Visa, Mastercard, American Express and PayPal">
+                  {% assign preferred_payment_types = 'paypal,visa,master,maestro,american_express,apple_pay,google_pay,afterpay' | split: ',' %}
+                  <ul class="cc-product-payment-logos" role="list" aria-label="Accepted payment methods">
+                    {% for payment_type in preferred_payment_types %}
+                      {% if shop.enabled_payment_types contains payment_type %}
+                        <li title="{{ payment_type | replace: '_', ' ' | capitalize | escape }}">{{ payment_type | payment_type_svg_tag: class: 'cc-product-payment-logo' }}</li>
+                      {% endif %}
+                    {% endfor %}
+                    {% for payment_type in shop.enabled_payment_types %}
+                      {% unless preferred_payment_types contains payment_type %}
+                        <li title="{{ payment_type | replace: '_', ' ' | capitalize | escape }}">{{ payment_type | payment_type_svg_tag: class: 'cc-product-payment-logo' }}</li>
+                      {% endunless %}
+                    {% endfor %}
+                  </ul>
                 </div>
                 <div class="cc-product-trust-grid" role="list" aria-label="Purchase guarantees">
                   <div class="cc-product-trust-item" role="listitem"><img src="{{ 'buyer-protection.png' | asset_url }}" width="1254" height="1254" loading="lazy" alt=""><strong>Buyer Protection</strong></div>
@@ -2352,13 +2364,9 @@
     font-size: 12px;
     font-weight: 700;
   }
-  #cc-product-{{ section.id }} .cc-product-payment-methods > img {
-    width: min(100%, 390px);
-    height: auto;
-    max-height: 38px;
-    margin: 0 auto;
-    object-fit: contain;
-  }
+  #cc-product-{{ section.id }} .cc-product-payment-logos { display: flex; max-width: 100%; margin: 0; padding: 0; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px; list-style: none; }
+  #cc-product-{{ section.id }} .cc-product-payment-logos > li { display: grid; min-width: 48px; height: 32px; padding: 4px 7px; place-items: center; border: 1px solid rgba(217,231,240,.92); border-radius: 5px; background: #fff; box-shadow: 0 3px 9px rgba(17,24,38,.05); }
+  #cc-product-{{ section.id }} .cc-product-payment-logo { display: block; width: auto !important; max-width: 58px; height: 21px !important; }
   #cc-product-{{ section.id }} .cc-product-trust-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2480,6 +2488,9 @@
     #cc-product-{{ section.id }} .cc-product-actions .cc-product-add { min-height: 50px; padding-inline: 10px; gap: 7px; font-size: 14px; }
     #cc-product-{{ section.id }} .cc-product-actions .cc-product-buy-now { min-height: 58px; font-size: 18px; }
     #cc-product-{{ section.id }} .cc-product-actions .cc-purchase-button-icon { width: 20px; height: 20px; flex-basis: 20px; }
+    #cc-product-{{ section.id }} .cc-product-payment-logos { gap: 4px; }
+    #cc-product-{{ section.id }} .cc-product-payment-logos > li { min-width: 38px; height: 28px; padding: 3px 5px; }
+    #cc-product-{{ section.id }} .cc-product-payment-logo { max-width: 44px; height: 18px !important; }
     #cc-product-{{ section.id }} .cc-product-trust-grid { gap: 7px; }
     #cc-product-{{ section.id }} .cc-product-trust-item { min-height: 116px; padding: 11px 5px 9px; }
     #cc-product-{{ section.id }} .cc-product-trust-item > img { width: 48px; height: 48px; }

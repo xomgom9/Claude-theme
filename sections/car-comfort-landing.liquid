@@ -324,15 +324,27 @@
                 {% endfor %}
 
                 <div class="cc-product-stock" data-stock><span></span>{% if selected_variant.available %}In stock{% else %}Sold out{% endif %}</div>
-                {% if section.settings.show_quantity %}
-                  <div class="cc-product-quantity-wrap"><label for="cc-quantity-{{ section.id }}">Quantity</label><div class="cc-product-quantity"><button type="button" data-quantity-minus aria-label="Decrease quantity">−</button><input id="cc-quantity-{{ section.id }}" type="number" name="quantity" value="1" min="1" inputmode="numeric"><button type="button" data-quantity-plus aria-label="Increase quantity">+</button></div></div>
-                {% else %}<input type="hidden" name="quantity" value="1">{% endif %}
-
                 <div class="cc-product-actions">
-                  <button class="cc-product-add" type="submit" name="add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}>
-                    <span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H7"></path><circle cx="10" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg></span>
-                    <span data-button-label>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</span>
-                  </button>
+                  {% if section.settings.show_quantity %}
+                    <div class="cc-product-quantity-block">
+                      <label for="cc-quantity-{{ section.id }}">Quantity</label>
+                      <div class="cc-product-primary-row">
+                        <div class="cc-product-quantity"><button type="button" data-quantity-minus aria-label="Decrease quantity">−</button><input id="cc-quantity-{{ section.id }}" type="number" name="quantity" value="1" min="1" inputmode="numeric" aria-label="Quantity"><button type="button" data-quantity-plus aria-label="Increase quantity">+</button></div>
+                        <button class="cc-product-add" type="submit" name="add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}>
+                          <span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H7"></path><circle cx="10" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg></span>
+                          <span data-button-label>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</span>
+                        </button>
+                      </div>
+                    </div>
+                  {% else %}
+                    <input type="hidden" name="quantity" value="1">
+                    <div class="cc-product-primary-row is-full">
+                      <button class="cc-product-add" type="submit" name="add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}>
+                        <span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H7"></path><circle cx="10" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg></span>
+                        <span data-button-label>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</span>
+                      </button>
+                    </div>
+                  {% endif %}
                   <button class="cc-product-buy-now" type="submit" name="return_to" value="/checkout" data-buy-button{% unless selected_variant.available %} disabled{% endunless %}>
                     <span class="cc-buy-flames" aria-hidden="true"><i style="--fire-x:8%;--fire-delay:-.15s;--fire-scale:.72">🔥</i><i style="--fire-x:28%;--fire-delay:-.72s;--fire-scale:.9">🔥</i><i style="--fire-x:50%;--fire-delay:-.35s;--fire-scale:1.05">🔥</i><i style="--fire-x:72%;--fire-delay:-.9s;--fire-scale:.82">🔥</i><i style="--fire-x:92%;--fire-delay:-.48s;--fire-scale:.7">🔥</i></span>
                     <span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></span>
@@ -816,9 +828,13 @@
     else updateOptionAvailability();
 
     const stickyBar = section.querySelector('.cc-product-sticky');
-    if (stickyBar && 'IntersectionObserver' in window) {
-      new IntersectionObserver(([entry]) => stickyBar.classList.toggle('is-visible', entry.isIntersecting), { threshold: 0.05 }).observe(section.querySelector('.cc-product-layout'));
-    } else stickyBar?.classList.add('is-visible');
+    const mainActions = section.querySelector('.cc-product-actions');
+    if (stickyBar && mainActions && 'IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        const passedMainActions = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+        stickyBar.classList.toggle('is-visible', passedMainActions);
+      }, { threshold: 0.05 }).observe(mainActions);
+    }
 
     const countdown = section.querySelector('[data-product-countdown]');
     if (countdown) {
@@ -2284,18 +2300,22 @@
   #cc-product-{{ section.id }} .cc-product-stock { display: flex; gap: 8px; align-items: center; color: var(--product-dark); font-size: 14px; }
   #cc-product-{{ section.id }} .cc-product-stock > span { width: 9px; height: 9px; border-radius: 50%; background: var(--product-accent); box-shadow: 0 0 0 4px var(--product-accent-soft); }
   #cc-product-{{ section.id }} .cc-product-stock.is-sold-out > span { background: rgba(17,24,38,.5); box-shadow: none; }
-  #cc-product-{{ section.id }} .cc-product-quantity-wrap { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-  #cc-product-{{ section.id }} .cc-product-quantity-wrap > label { font-weight: 600; }
-  #cc-product-{{ section.id }} .cc-product-quantity { display: grid; grid-template-columns: 42px 52px 42px; border: 1px solid var(--product-border); border-radius: 8px; overflow: hidden; background: var(--product-card); }
+  #cc-product-{{ section.id }} .cc-product-quantity-block { display: grid; gap: 8px; }
+  #cc-product-{{ section.id }} .cc-product-quantity-block > label { color: var(--product-dark); font-size: 14px; font-weight: 750; line-height: 1.2; }
+  #cc-product-{{ section.id }} .cc-product-primary-row { display: grid; grid-template-columns: minmax(126px,.72fr) minmax(0,2fr); gap: 12px; }
+  #cc-product-{{ section.id }} .cc-product-primary-row.is-full { grid-template-columns: 1fr; }
+  #cc-product-{{ section.id }} .cc-product-quantity { display: grid; min-width: 0; grid-template-columns: repeat(3,minmax(0,1fr)); overflow: hidden; border: 2px solid #e1e6ed; border-radius: 9px; background: var(--product-card); box-shadow: 0 3px 10px rgba(17,24,38,.04); }
   #cc-product-{{ section.id }} .cc-product-quantity button,
-  #cc-product-{{ section.id }} .cc-product-quantity input { height: 42px; padding: 0; border: 0; background: transparent; color: var(--product-dark); text-align: center; }
-  #cc-product-{{ section.id }} .cc-product-quantity button { cursor: pointer; }
+  #cc-product-{{ section.id }} .cc-product-quantity input { width: 100%; height: 48px; padding: 0; border: 0; background: transparent; color: var(--product-dark); text-align: center; font-size: 16px; font-weight: 800; }
+  #cc-product-{{ section.id }} .cc-product-quantity button { cursor: pointer; font-size: 18px; font-weight: 800; }
   #cc-product-{{ section.id }} .cc-product-quantity button:hover { background: var(--product-accent-soft); }
-  #cc-product-{{ section.id }} .cc-product-quantity input { border-inline: 1px solid var(--product-border); appearance: textfield; }
-  #cc-product-{{ section.id }} .cc-product-actions { display: grid; grid-template-columns: 1fr; gap: 12px; padding-top: 4px; }
+  #cc-product-{{ section.id }} .cc-product-quantity input { appearance: textfield; }
+  #cc-product-{{ section.id }} .cc-product-quantity input::-webkit-inner-spin-button,
+  #cc-product-{{ section.id }} .cc-product-quantity input::-webkit-outer-spin-button { margin: 0; appearance: none; }
+  #cc-product-{{ section.id }} .cc-product-actions { display: grid; grid-template-columns: 1fr; gap: 13px; padding-top: 4px; }
   #cc-product-{{ section.id }} .cc-product-sticky { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.15fr); gap: 10px; }
   #cc-product-{{ section.id }} .cc-product-add,
-  #cc-product-{{ section.id }} .cc-product-buy-now { display: inline-flex; min-height: 54px; padding: 0 18px; position: relative; align-items: center; justify-content: center; gap: 9px; overflow: visible; border-radius: 10px; font-weight: 850; cursor: pointer; isolation: isolate; transition: border-color .2s ease, background .25s ease, box-shadow .25s ease, color .2s ease, transform .2s ease; }
+  #cc-product-{{ section.id }} .cc-product-buy-now { display: inline-flex; width: 100%; min-height: 50px; padding: 0 18px; position: relative; align-items: center; justify-content: center; gap: 9px; overflow: visible; border-radius: 10px; font-weight: 850; cursor: pointer; isolation: isolate; transition: border-color .2s ease, background .25s ease, box-shadow .25s ease, color .2s ease, transform .2s ease; }
   #cc-product-{{ section.id }} .cc-product-add { border: 2px solid #f5b400; background: linear-gradient(135deg,#fff8dc,#ffedaa); color: #8b3f00; box-shadow: 0 7px 18px rgba(245,180,0,.16); }
   #cc-product-{{ section.id }} .cc-product-add:hover { border-color: #e89a00; background: linear-gradient(135deg,#fff4c7,#ffe37c); transform: translateY(-1px); }
   #cc-product-{{ section.id }} .cc-product-buy-now { min-height: 60px; border: 0; border-radius: 999px; background: linear-gradient(110deg,#d92d20,#f04424 52%,#ff641e); background-size: 180% 100%; color: #fff; box-shadow: 0 12px 28px rgba(217,45,32,.28),0 0 0 1px rgba(255,255,255,.14) inset; font-size: 18px; animation: cc-buy-button-glow 2.2s ease-in-out infinite alternate; }
@@ -2440,7 +2460,16 @@
     #cc-product-{{ section.id }} .cc-product-option-values { display: grid; grid-template-columns: repeat(auto-fit,minmax(105px,1fr)); gap: 8px; overflow: visible; padding: 0; }
     #cc-product-{{ section.id }} .cc-product-option-value { width: 100%; min-width: 0; min-height: 42px; padding: 8px 10px; border-radius: 7px; font-size: 12px; }
     #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-color: var(--product-accent); background: var(--product-accent-soft); }
-    #cc-product-{{ section.id }} .cc-product-actions { display: none; }
+    #cc-product-{{ section.id }} .cc-product-actions { display: grid; gap: 12px; padding-top: 2px; }
+    #cc-product-{{ section.id }} .cc-product-quantity-block { gap: 7px; }
+    #cc-product-{{ section.id }} .cc-product-quantity-block > label { font-size: 13px; }
+    #cc-product-{{ section.id }} .cc-product-primary-row { grid-template-columns: minmax(108px,.72fr) minmax(0,1.9fr); gap: 8px; }
+    #cc-product-{{ section.id }} .cc-product-primary-row.is-full { grid-template-columns: 1fr; }
+    #cc-product-{{ section.id }} .cc-product-quantity button,
+    #cc-product-{{ section.id }} .cc-product-quantity input { height: 48px; font-size: 15px; }
+    #cc-product-{{ section.id }} .cc-product-actions .cc-product-add { min-height: 50px; padding-inline: 10px; gap: 7px; font-size: 14px; }
+    #cc-product-{{ section.id }} .cc-product-actions .cc-product-buy-now { min-height: 58px; font-size: 18px; }
+    #cc-product-{{ section.id }} .cc-product-actions .cc-purchase-button-icon { width: 20px; height: 20px; flex-basis: 20px; }
     #cc-product-{{ section.id }} .cc-product-trust-grid { gap: 7px; }
     #cc-product-{{ section.id }} .cc-product-trust-item { min-height: 116px; padding: 11px 5px 9px; }
     #cc-product-{{ section.id }} .cc-product-trust-item > img { width: 48px; height: 48px; }

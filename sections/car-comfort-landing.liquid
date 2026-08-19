@@ -6,11 +6,14 @@
   assign selected_variant = offer_product.selected_or_first_available_variant
   assign product_image = offer_product.featured_image
   assign product_form_id = 'cc-product-form-' | append: section.id
-  assign product_terms_form_id = 'cc-product-terms-form-' | append: section.id
   assign product_rating = section.settings.rating_score
   assign product_review_count = section.settings.review_count
   assign product_sold_count = section.settings.sold_count
   assign product_rating_percent = product_rating | times: 20
+  assign promotion_label = section.settings.promotion_title
+  if promotion_label == blank or promotion_label == 'WELCOME OFFER · Limited-time deal'
+    assign promotion_label = 'Welcome Deal'
+  endif
 %}
 
 <!-- Claude-theme storefront build: 2026-08-18 -->
@@ -247,7 +250,7 @@
 
           <div class="cc-product-purchase">
             {% if section.settings.show_promotion %}
-              <div class="cc-product-promo-head"><strong>{{ section.settings.promotion_title }}</strong>{% if section.settings.show_countdown %}<span>{{ section.settings.promotion_end }} · <b data-product-countdown data-hours="{{ section.settings.countdown_hours }}">00:00:00</b></span>{% endif %}</div>
+              <div class="cc-product-promo-head"><strong><span class="cc-product-deal-flame" aria-hidden="true">🔥</span>{{ promotion_label }}</strong>{% if section.settings.show_countdown %}<span>{{ section.settings.promotion_end }} · <b data-product-countdown data-hours="{{ section.settings.countdown_hours }}">00:00:00</b></span>{% endif %}</div>
             {% endif %}
             <div class="cc-product-price-box{% unless section.settings.show_promotion %} no-promo{% endunless %}">
               {% if selected_variant != blank %}
@@ -264,15 +267,6 @@
               <p class="cc-product-extra">{{ section.settings.extra_offer }}</p>
               {% if localization.country != blank %}<p class="cc-product-market-price"><span aria-hidden="true">◎</span> Price shown for <strong>{{ localization.country.name }}</strong> in <strong>{{ localization.country.currency.iso_code }}</strong></p>{% endif %}
             </div>
-
-            {% if offer_product != blank %}
-              {% form 'product', offer_product, id: product_terms_form_id, class: 'cc-product-payment-terms' %}
-                <input type="hidden" name="id" value="{{ selected_variant.id }}" data-payment-terms-variant>
-                <span class="cc-product-payment-icon" aria-hidden="true">▦</span>
-                <span class="cc-product-payment-copy"><strong>Flexible payment options</strong>{{ form | payment_terms }}</span>
-                <span class="cc-product-row-arrow" aria-hidden="true">›</span>
-              {% endform %}
-            {% endif %}
 
             {% if section.settings.show_coupon %}
               <details class="cc-product-coupon"><summary><span aria-hidden="true">%</span><strong>{{ section.settings.coupon_label }}</strong><span aria-hidden="true">⌄</span></summary><div>{{ section.settings.coupon_details }}</div></details>
@@ -625,7 +619,6 @@
     }
     const optionGroups = [...section.querySelectorAll('[data-option-position]')];
     const variantIdInput = section.querySelector('[data-variant-id]');
-    const paymentTermsVariantInput = section.querySelector('[data-payment-terms-variant]');
     const currentPrice = section.querySelector('[data-current-price]');
     const oldPrice = section.querySelector('[data-old-price]');
     const saveBadge = section.querySelector('[data-save-badge]');
@@ -698,10 +691,6 @@
     const updateVariant = (variant) => {
       if (!variant) return;
       if (variantIdInput) variantIdInput.value = variant.id;
-      if (paymentTermsVariantInput) {
-        paymentTermsVariantInput.value = variant.id;
-        paymentTermsVariantInput.dispatchEvent(new Event('change', { bubbles: true }));
-      }
       const localizedMoney = variantMoney[String(variant.id)] || {};
       if (currentPrice) currentPrice.textContent = localizedMoney.price || formatMoney(variant.price);
       const discounted = Number(variant.compare_at_price || 0) > Number(variant.price || 0);
@@ -2124,18 +2113,32 @@
   #cc-product-{{ section.id }} .cc-product-zoom { display: grid; width: 40px; height: 40px; top: 12px; place-items: center; border-radius: 50%; cursor: pointer; font-size: 22px; }
   #cc-product-{{ section.id }} .cc-product-counter { bottom: 12px; padding: 5px 9px; border-radius: 99px; font-size: 12px; }
   #cc-product-{{ section.id }} .cc-product-heading h2 { min-height: 0; margin: 0; color: var(--product-dark); font-size: clamp(19px, 1.7vw, 23px); line-height: 1.28; font-weight: 750; }
-  #cc-product-{{ section.id }} .cc-product-rating { display: flex; gap: 9px; margin-top: 13px; align-items: stretch; flex-wrap: wrap; color: var(--product-text-muted); }
+  #cc-product-{{ section.id }} .cc-product-rating {
+    display: inline-flex;
+    max-width: 100%;
+    margin-top: 13px;
+    padding: 8px 12px;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    border: 1px solid rgba(217,231,240,.9);
+    border-radius: 14px;
+    background: linear-gradient(135deg,#fff,#f8fcff);
+    color: var(--product-text-muted);
+    box-shadow: 0 8px 24px rgba(17,24,38,.07);
+    scrollbar-width: none;
+  }
+  #cc-product-{{ section.id }} .cc-product-rating::-webkit-scrollbar { display: none; }
   #cc-product-{{ section.id }} .cc-product-stars {
     display: inline-flex;
-    min-height: 48px;
-    padding: 7px 11px;
+    min-height: 38px;
+    padding: 0 14px 0 0;
     align-items: center;
-    border: 1px solid rgba(246,184,0,.38);
-    border-radius: 10px;
-    background: linear-gradient(135deg,#fffdf4,#fff6c9);
-    box-shadow: 0 7px 18px rgba(181,128,0,.12);
-    font-size: clamp(22px,2vw,27px);
-    letter-spacing: 2px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: clamp(20px,1.8vw,24px);
+    letter-spacing: 1px;
     line-height: 1;
   }
   #cc-product-{{ section.id }} .cc-product-stars > span {
@@ -2147,53 +2150,50 @@
   }
   #cc-product-{{ section.id }} .cc-product-metric {
     display: grid;
-    min-width: 78px;
-    min-height: 48px;
-    padding: 6px 11px;
+    min-width: 72px;
+    min-height: 38px;
+    padding: 0 13px;
     align-content: center;
     gap: 1px;
-    border: 1px solid var(--product-border);
-    border-radius: 10px;
-    background: var(--product-card);
+    border: 0;
+    border-left: 1px solid var(--product-border);
+    border-radius: 0;
+    background: transparent;
     color: var(--product-dark);
     text-decoration: none;
-    box-shadow: 0 6px 16px rgba(17,24,38,.07);
-    transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+    box-shadow: none;
+    transition: color .2s ease,background-color .2s ease;
   }
   #cc-product-{{ section.id }} .cc-product-metric strong {
     color: var(--product-dark);
-    font-size: 16px;
-    font-weight: 850;
+    font-size: 15px;
+    font-weight: 800;
     line-height: 1.05;
   }
   #cc-product-{{ section.id }} .cc-product-metric small {
     color: var(--product-text-muted);
-    font-size: 9px;
-    font-weight: 750;
-    letter-spacing: .06em;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .025em;
     line-height: 1.15;
-    text-transform: uppercase;
+    text-transform: none;
   }
-  #cc-product-{{ section.id }} .cc-product-score {
-    border-color: rgba(56,189,248,.38);
-    background: linear-gradient(135deg,#f7fdff,#dff5ff);
-  }
+  #cc-product-{{ section.id }} .cc-product-score strong { color: #1684d6; }
   #cc-product-{{ section.id }} .cc-product-reviews:hover,
   #cc-product-{{ section.id }} .cc-product-reviews:focus-visible {
-    border-color: var(--product-accent);
-    box-shadow: 0 9px 20px rgba(56,189,248,.18);
-    transform: translateY(-2px);
+    background: rgba(56,189,248,.08);
+    color: #1684d6;
   }
   #cc-product-{{ section.id }} .cc-product-sold {
-    min-width: 104px;
-    border-color: rgba(246,184,0,.32);
-    background: linear-gradient(135deg,#fffdf5,#fff3bd);
+    min-width: 96px;
+    padding-right: 4px;
   }
   #cc-product-{{ section.id }} .cc-product-purchase { margin-top: 16px; }
   #cc-product-{{ section.id }} .cc-product-promo-head { display: flex; min-height: 46px; padding: 10px 14px; position: relative; align-items: center; justify-content: space-between; gap: 14px; overflow: hidden; border: 1px solid var(--product-deal); border-bottom: 0; border-radius: 7px 7px 0 0; background: var(--product-deal-soft); color: #e80036; font-size: 14px; }
   #cc-product-{{ section.id }} .cc-product-promo-head::after { content: '➜'; position: absolute; top: 50%; right: 20px; color: rgba(255,49,92,.09); font-size: 72px; line-height: 1; transform: translateY(-50%) rotate(-18deg); }
   #cc-product-{{ section.id }} .cc-product-promo-head > * { position: relative; z-index: 1; }
-  #cc-product-{{ section.id }} .cc-product-promo-head strong { font-size: 1.15em; font-weight: 850; }
+  #cc-product-{{ section.id }} .cc-product-promo-head strong { display: inline-flex; align-items: center; gap: 8px; font-size: 1.15em; font-weight: 850; }
+  #cc-product-{{ section.id }} .cc-product-deal-flame { display: inline-block; font-size: 1.55em; line-height: 1; transform-origin: 50% 90%; filter: drop-shadow(0 0 5px rgba(255,97,0,.55)); animation: cc-product-flame 1.1s ease-in-out infinite alternate; }
   #cc-product-{{ section.id }} .cc-product-price-box { padding: 13px 14px; border: 1px solid var(--product-deal); border-top: 0; border-radius: 0 0 7px 7px; background: var(--product-card); }
   #cc-product-{{ section.id }} .cc-product-price-box.no-promo { border-top: 1px solid var(--product-deal); border-radius: 7px; }
   #cc-product-{{ section.id }} .cc-product-price-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
@@ -2206,13 +2206,6 @@
   #cc-product-{{ section.id }} .cc-product-market-price { display: flex; gap: 6px; margin: 8px 0 0; align-items: center; color: var(--product-text-muted); font-size: 11px; }
   #cc-product-{{ section.id }} .cc-product-market-price > span { color: var(--product-accent); font-size: 15px; }
   #cc-product-{{ section.id }} .cc-product-market-price strong { color: var(--product-dark); font-weight: 750; }
-  #cc-product-{{ section.id }} .cc-product-payment-terms { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; min-height: 44px; margin-top: 9px; padding: 8px 12px; align-items: center; border: 0; border-radius: 0; background: #f7f8fa; color: var(--product-dark); }
-  #cc-product-{{ section.id }} .cc-product-payment-terms > input { display: none; }
-  #cc-product-{{ section.id }} .cc-product-payment-icon { color: var(--product-accent); font-size: 18px; }
-  #cc-product-{{ section.id }} .cc-product-payment-copy { display: grid; gap: 2px; min-width: 0; font-size: 12px; }
-  #cc-product-{{ section.id }} .cc-product-payment-copy strong { font-weight: 600; }
-  #cc-product-{{ section.id }} .cc-product-payment-copy shopify-payment-terms { color: var(--product-text-muted); font-size: 11px; }
-  #cc-product-{{ section.id }} .cc-product-row-arrow { color: var(--product-dark); font-size: 22px; line-height: 1; }
   #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 9px; border: 0; border-radius: 0; background: var(--product-deal-soft); }
   #cc-product-{{ section.id }} .cc-product-coupon summary { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding: 11px 12px; align-items: center; color: var(--product-deal); cursor: pointer; list-style: none; }
   #cc-product-{{ section.id }} .cc-product-coupon summary > span { color: var(--product-deal); }
@@ -2315,6 +2308,14 @@
   #cc-product-{{ section.id }} .cc-product-lightbox > div,
   #cc-product-{{ section.id }} .cc-product-lightbox img { width: 100%; height: 100%; object-fit: contain; }
   @keyframes cc-product-in { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
+  @keyframes cc-product-flame {
+    0% { transform: translateY(1px) rotate(-5deg) scale(.94); filter: drop-shadow(0 0 3px rgba(255,97,0,.45)); }
+    55% { transform: translateY(-1px) rotate(3deg) scale(1.08); filter: drop-shadow(0 0 9px rgba(255,49,0,.72)); }
+    100% { transform: translateY(-2px) rotate(-2deg) scale(1.01); filter: drop-shadow(0 0 6px rgba(255,166,0,.72)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #cc-product-{{ section.id }} .cc-product-deal-flame { animation: none; }
+  }
 
   @media (max-width: 749px) {
     #cc-product-{{ section.id }} { padding: 10px 14px calc(92px + env(safe-area-inset-bottom)); overflow: hidden; background: #fff; }
@@ -2324,14 +2325,13 @@
     #cc-product-{{ section.id }} .cc-product-heading { order: 2; padding: 2px 1px 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 16px; line-height: 1.32; font-weight: 800; }
-    #cc-product-{{ section.id }} .cc-product-rating { gap: 5px; margin-top: 7px; align-items: center; }
-    #cc-product-{{ section.id }} .cc-product-stars { min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 18px; letter-spacing: 1px; }
-    #cc-product-{{ section.id }} .cc-product-metric { display: inline-flex; min-width: 0; min-height: 0; padding: 0; align-items: baseline; gap: 3px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+    #cc-product-{{ section.id }} .cc-product-rating { gap: 0; margin-top: 7px; padding: 6px 9px; align-items: center; border-radius: 11px; }
+    #cc-product-{{ section.id }} .cc-product-stars { min-height: 30px; padding: 0 10px 0 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 17px; letter-spacing: .5px; }
+    #cc-product-{{ section.id }} .cc-product-metric { display: inline-flex; min-width: 0; min-height: 30px; padding: 0 8px; align-items: center; gap: 3px; border: 0; border-left: 1px solid var(--product-border); border-radius: 0; background: transparent; box-shadow: none; }
     #cc-product-{{ section.id }} .cc-product-metric strong { font-size: 12px; }
     #cc-product-{{ section.id }} .cc-product-metric small { font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; }
     #cc-product-{{ section.id }} .cc-product-score small { display: none; }
-    #cc-product-{{ section.id }} .cc-product-sold { min-width: 0; }
-    #cc-product-{{ section.id }} .cc-product-sold::before { content: '|'; margin-right: 2px; color: rgba(17,24,38,.35); }
+    #cc-product-{{ section.id }} .cc-product-sold { min-width: 0; padding-right: 0; }
     #cc-product-{{ section.id }} .cc-product-reviews:hover,
     #cc-product-{{ section.id }} .cc-product-reviews:focus-visible { border-color: transparent; box-shadow: none; transform: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnails { padding: 10px 12px 12px; flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; }
@@ -2348,7 +2348,6 @@
     #cc-product-{{ section.id }} .cc-product-save { font-size: 11px; }
     #cc-product-{{ section.id }} .cc-product-extra { margin-top: 6px; }
     #cc-product-{{ section.id }} .cc-product-market-price { flex-wrap: wrap; line-height: 1.25; }
-    #cc-product-{{ section.id }} .cc-product-payment-terms,
     #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 8px; }
     #cc-product-{{ section.id }} .cc-product-divider { margin: 12px 0; }
     #cc-product-{{ section.id }} .cc-product-option legend { margin-bottom: 10px; font-size: 14px; }
@@ -2451,7 +2450,7 @@
     {"type":"checkbox","id":"show_sold_count","label":"Show sold count","default":true},
     {"type":"text","id":"sold_count","label":"Sold count","default":"13,475"},
     {"type":"checkbox","id":"show_promotion","label":"Show promotion bar","default":true},
-    {"type":"text","id":"promotion_title","label":"Promotion title","default":"WELCOME OFFER · Limited-time deal"},
+    {"type":"text","id":"promotion_title","label":"Promotion title","default":"Welcome Deal"},
     {"type":"checkbox","id":"show_countdown","label":"Show promotion end time","default":true},
     {"type":"text","id":"promotion_end","label":"Promotion end text","default":"Ends soon"},
     {"type":"range","id":"countdown_hours","label":"Countdown hours","min":1,"max":72,"step":1,"default":8},

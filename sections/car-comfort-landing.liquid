@@ -2059,10 +2059,12 @@
     --product-text-muted: rgba(17, 24, 38, 0.68);
     width: 100%;
     padding: clamp(32px, 4vw, 56px) max(24px, calc((100vw - 1180px) / 2));
-    overflow: clip;
+    overflow-x: clip;
+    overflow-y: visible;
     background: var(--product-background);
     color: var(--product-dark);
   }
+  .cc-landing { overflow-x: clip; overflow-y: visible; }
   #cc-product-{{ section.id }} * { box-sizing: border-box; }
   #cc-product-{{ section.id }} .cc-product-anchor { position: absolute; translate: 0 -90px; }
   #cc-product-{{ section.id }} button,
@@ -2085,6 +2087,14 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+  @media (min-width: 750px) {
+    #cc-product-{{ section.id }} .cc-product-gallery {
+      position: sticky;
+      z-index: 2;
+      top: 96px;
+      align-self: start;
+    }
   }
   #cc-product-{{ section.id }} .cc-product-gallery.no-media .cc-product-thumbnails { display: none; }
   #cc-product-{{ section.id }} .cc-product-thumbnails {
@@ -2421,7 +2431,7 @@
     #cc-product-{{ section.id }} { padding: 10px 14px calc(92px + env(safe-area-inset-bottom)); overflow: hidden; background: #fff; }
     #cc-product-{{ section.id }} .cc-product-layout { display: flex; flex-direction: column; gap: 12px; }
     #cc-product-{{ section.id }} .cc-product-info { display: contents; }
-    #cc-product-{{ section.id }} .cc-product-gallery { order: 1; display: flex; padding: 0; flex-direction: column; gap: 9px; overflow: hidden; border: 0; border-radius: 12px; background: var(--product-card); }
+    #cc-product-{{ section.id }} .cc-product-gallery { order: 1; display: flex; padding: 0; position: static; flex-direction: column; gap: 9px; overflow: hidden; border: 0; border-radius: 12px; background: var(--product-card); }
     #cc-product-{{ section.id }} .cc-product-heading { order: 2; padding: 2px 1px 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 16px; line-height: 1.32; font-weight: 800; }

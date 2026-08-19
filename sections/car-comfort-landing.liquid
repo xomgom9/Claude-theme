@@ -283,10 +283,6 @@
                     <div class="cc-product-option-values">
                       {% for value in option.values %}
                         <button type="button" class="cc-product-option-value{% if value.selected %} is-selected{% endif %}{% unless value.available %} is-unavailable{% endunless %}" data-option-value="{{ value | escape }}" aria-pressed="{% if value.selected %}true{% else %}false{% endif %}"{% unless value.available %} disabled{% endunless %}>
-                          {% if section.settings.show_variant_thumbnails and option.position == 1 %}
-                            {% assign value_variant = value.variant %}
-                            {% if value_variant.featured_image != blank %}{{ value_variant.featured_image | image_url: width: 140 | image_tag: loading: 'lazy', alt: value }}{% endif %}
-                          {% endif %}
                           <span>{{ value }}</span>
                         </button>
                       {% endfor %}
@@ -2037,42 +2033,47 @@
     padding: 0;
   }
   #cc-product-{{ section.id }} .cc-product-gallery {
-    display: grid;
-    grid-template-columns: 58px minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 12px;
   }
-  #cc-product-{{ section.id }} .cc-product-gallery.no-media { grid-template-columns: minmax(0, 1fr); }
   #cc-product-{{ section.id }} .cc-product-gallery.no-media .cc-product-thumbnails { display: none; }
   #cc-product-{{ section.id }} .cc-product-thumbnails {
     display: flex;
-    max-height: min(480px, calc(100vh - 120px));
-    flex-direction: column;
-    gap: 9px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
+    padding: 2px 1px 5px;
+    order: 2;
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
     overscroll-behavior: contain;
-    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
   }
+  #cc-product-{{ section.id }} .cc-product-thumbnails::-webkit-scrollbar { display: none; }
   #cc-product-{{ section.id }} .cc-product-thumbnail {
     display: grid;
-    flex: 0 0 56px;
-    width: 56px;
-    height: 56px;
-    padding: 3px;
+    flex: 0 0 68px;
+    width: 68px;
+    height: 68px;
+    padding: 4px;
     position: relative;
     place-items: center;
     overflow: hidden;
-    border: 1px solid transparent;
-    border-radius: 5px;
+    border: 1px solid var(--product-border);
+    border-radius: 8px;
     background: var(--product-card);
     cursor: pointer;
+    scroll-snap-align: start;
     transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
   }
   #cc-product-{{ section.id }} .cc-product-thumbnail:hover,
-  #cc-product-{{ section.id }} .cc-product-thumbnail.is-active { border-color: var(--product-deal); }
+  #cc-product-{{ section.id }} .cc-product-thumbnail.is-active { border-color: var(--product-accent); }
   #cc-product-{{ section.id }} .cc-product-thumbnail.is-active {
     border-width: 2px;
-    box-shadow: 0 0 0 2px rgba(255,49,92,.11);
+    box-shadow: 0 0 0 2px rgba(56,189,248,.14);
   }
   #cc-product-{{ section.id }} .cc-product-thumbnail img,
   #cc-product-{{ section.id }} .cc-product-thumbnail video { width: 100%; height: 100%; object-fit: contain; }
@@ -2093,13 +2094,14 @@
     display: grid;
     width: 100%;
     aspect-ratio: 1;
+    order: 1;
     position: relative;
     place-items: center;
     overflow: hidden;
-    border: 4px solid #dc321f;
-    border-radius: 18px;
+    border: 0;
+    border-radius: 14px;
     background: #fff;
-    box-shadow: 0 12px 30px rgba(220,50,31,.12);
+    box-shadow: 0 10px 28px rgba(17,24,38,.08);
   }
   #cc-product-{{ section.id }} .cc-product-media {
     display: none;
@@ -2232,9 +2234,8 @@
   #cc-product-{{ section.id }} .cc-product-form-new { display: grid; gap: 16px; }
   #cc-product-{{ section.id }} .cc-product-option { min-width: 0; margin: 0; padding: 0; border: 0; }
   #cc-product-{{ section.id }} .cc-product-option legend { margin-bottom: 9px; color: var(--product-dark); font-size: 15px; font-weight: 600; }
-  #cc-product-{{ section.id }} .cc-product-option-values { display: grid; grid-template-columns: repeat(auto-fill,minmax(72px,1fr)); gap: 10px; }
-  #cc-product-{{ section.id }} .cc-product-option-value { display: grid; width: 100%; min-width: 0; min-height: 44px; padding: 5px 7px; position: relative; place-items: center; gap: 4px; border: 1px solid var(--product-border); border-radius: 6px; background: var(--product-card); color: var(--product-dark); cursor: pointer; font-size: 11px; line-height: 1.2; }
-  #cc-product-{{ section.id }} .cc-product-option-value img { width: 54px; height: 54px; object-fit: contain; }
+  #cc-product-{{ section.id }} .cc-product-option-values { display: flex; flex-wrap: wrap; gap: 9px; }
+  #cc-product-{{ section.id }} .cc-product-option-value { display: inline-flex; width: auto; min-width: 94px; min-height: 42px; padding: 9px 14px; position: relative; align-items: center; justify-content: center; border: 1px solid var(--product-border); border-radius: 7px; background: var(--product-card); color: var(--product-dark); cursor: pointer; font-size: 12px; font-weight: 650; line-height: 1.2; text-align: center; }
   #cc-product-{{ section.id }} .cc-product-option-value:hover,
   #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-color: var(--product-accent); }
   #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-width: 2px; background: var(--product-accent-soft); }
@@ -2361,7 +2362,7 @@
     #cc-product-{{ section.id }} { padding: 10px 14px calc(92px + env(safe-area-inset-bottom)); overflow: hidden; background: #fff; }
     #cc-product-{{ section.id }} .cc-product-layout { display: flex; flex-direction: column; gap: 12px; }
     #cc-product-{{ section.id }} .cc-product-info { display: contents; }
-    #cc-product-{{ section.id }} .cc-product-gallery { order: 1; display: flex; padding: 0; flex-direction: column-reverse; gap: 0; overflow: hidden; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
+    #cc-product-{{ section.id }} .cc-product-gallery { order: 1; display: flex; padding: 0; flex-direction: column; gap: 9px; overflow: hidden; border: 0; border-radius: 12px; background: var(--product-card); }
     #cc-product-{{ section.id }} .cc-product-heading { order: 2; padding: 2px 1px 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 16px; line-height: 1.32; font-weight: 800; }
@@ -2374,10 +2375,9 @@
     #cc-product-{{ section.id }} .cc-product-sold { min-width: 0; padding-right: 0; }
     #cc-product-{{ section.id }} .cc-product-reviews:hover,
     #cc-product-{{ section.id }} .cc-product-reviews:focus-visible { border-color: transparent; box-shadow: none; transform: none; }
-    #cc-product-{{ section.id }} .cc-product-thumbnails { padding: 10px 12px 12px; flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; }
-    #cc-product-{{ section.id }} .cc-product-thumbnails::-webkit-scrollbar { display: none; }
-    #cc-product-{{ section.id }} .cc-product-thumbnail { flex-basis: 58px; width: 58px; height: 58px; scroll-snap-align: start; }
-    #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; border-width: 2px; border-radius: 12px 12px 0 0; }
+    #cc-product-{{ section.id }} .cc-product-thumbnails { padding: 1px 1px 4px; gap: 8px; }
+    #cc-product-{{ section.id }} .cc-product-thumbnail { flex-basis: 62px; width: 62px; height: 62px; border-radius: 7px; }
+    #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; border: 0; border-radius: 12px; box-shadow: 0 7px 20px rgba(17,24,38,.07); }
     #cc-product-{{ section.id }} .cc-product-media { padding: 0; }
     #cc-product-{{ section.id }} .cc-product-promo-head { min-height: 45px; padding: 9px 12px; align-items: flex-start; flex-wrap: wrap; font-size: 15px; }
     #cc-product-{{ section.id }} .cc-product-promo-head > strong { font-size: 20px; line-height: 1.2; }
@@ -2391,10 +2391,9 @@
     #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 8px; }
     #cc-product-{{ section.id }} .cc-product-divider { margin: 12px 0; }
     #cc-product-{{ section.id }} .cc-product-option legend { margin-bottom: 10px; font-size: 14px; }
-    #cc-product-{{ section.id }} .cc-product-option-values { grid-template-columns: repeat(auto-fill,minmax(58px,1fr)); gap: 10px 8px; overflow: visible; padding: 0; }
-    #cc-product-{{ section.id }} .cc-product-option-value { min-height: 0; padding: 3px; gap: 5px; border-radius: 3px; font-size: 9px; }
-    #cc-product-{{ section.id }} .cc-product-option-value img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
-    #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-color: var(--product-dark); background: var(--product-card); }
+    #cc-product-{{ section.id }} .cc-product-option-values { display: grid; grid-template-columns: repeat(auto-fit,minmax(105px,1fr)); gap: 8px; overflow: visible; padding: 0; }
+    #cc-product-{{ section.id }} .cc-product-option-value { width: 100%; min-width: 0; min-height: 42px; padding: 8px 10px; border-radius: 7px; font-size: 12px; }
+    #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-color: var(--product-accent); background: var(--product-accent-soft); }
     #cc-product-{{ section.id }} .cc-product-actions { display: none; }
     #cc-product-{{ section.id }} .cc-product-trust-grid { gap: 7px; }
     #cc-product-{{ section.id }} .cc-product-trust-item { min-height: 116px; padding: 11px 5px 9px; }
@@ -2504,7 +2503,6 @@
     {"type":"checkbox","id":"show_coupon","label":"Show coupon","default":true},
     {"type":"text","id":"coupon_label","label":"Coupon label","default":"View available coupons"},
     {"type":"textarea","id":"coupon_details","label":"Coupon details","default":"Apply the available discount code at checkout."},
-    {"type":"checkbox","id":"show_variant_thumbnails","label":"Show variant thumbnails","default":true},
     {"type":"checkbox","id":"show_quantity","label":"Show quantity selector","default":true},
     {"type":"checkbox","id":"show_sticky_mobile","label":"Show sticky mobile purchase bar","default":true},
     {"type":"header","content":"Landing media"},

@@ -300,8 +300,16 @@
                 {% else %}<input type="hidden" name="quantity" value="1">{% endif %}
 
                 <div class="cc-product-actions">
-                  <button class="cc-product-add" type="submit" name="add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</button>
-                  <button class="cc-product-buy-now" type="submit" name="return_to" value="/checkout" data-buy-button{% unless selected_variant.available %} disabled{% endunless %}>{% if selected_variant.available %}Buy Now{% else %}Sold Out{% endif %}</button>
+                  <button class="cc-product-add" type="submit" name="add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}>
+                    <span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H7"></path><circle cx="10" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg></span>
+                    <span data-button-label>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</span>
+                  </button>
+                  <button class="cc-product-buy-now" type="submit" name="return_to" value="/checkout" data-buy-button{% unless selected_variant.available %} disabled{% endunless %}>
+                    <span class="cc-buy-flames" aria-hidden="true"><i style="--fire-x:8%;--fire-delay:-.15s;--fire-scale:.72">🔥</i><i style="--fire-x:28%;--fire-delay:-.72s;--fire-scale:.9">🔥</i><i style="--fire-x:50%;--fire-delay:-.35s;--fire-scale:1.05">🔥</i><i style="--fire-x:72%;--fire-delay:-.9s;--fire-scale:.82">🔥</i><i style="--fire-x:92%;--fire-delay:-.48s;--fire-scale:.7">🔥</i></span>
+                    <span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></span>
+                    <span data-button-label>{% if selected_variant.available %}Buy Now{% else %}Sold Out{% endif %}</span>
+                    <span class="cc-buy-arrow" aria-hidden="true">›</span>
+                  </button>
                 </div>
                 <div class="cc-product-payment-methods">
                   <span>Secure payment methods</span>
@@ -320,7 +328,12 @@
         </div>
       </div>
 
-      {% if offer_product != blank and section.settings.show_sticky_mobile %}<div class="cc-product-sticky"><button type="submit" name="add" form="{{ product_form_id }}" class="cc-product-add">Add to Cart</button><button type="submit" name="return_to" value="/checkout" form="{{ product_form_id }}" class="cc-product-buy-now">Buy Now</button></div>{% endif %}
+      {% if offer_product != blank and section.settings.show_sticky_mobile %}
+        <div class="cc-product-sticky">
+          <button type="submit" name="add" form="{{ product_form_id }}" class="cc-product-add" data-add-button{% unless selected_variant.available %} disabled{% endunless %}><span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H7"></path><circle cx="10" cy="20" r="1.5"></circle><circle cx="17" cy="20" r="1.5"></circle></svg></span><span data-button-label>{% if selected_variant.available %}Add to Cart{% else %}Sold Out{% endif %}</span></button>
+          <button type="submit" name="return_to" value="/checkout" form="{{ product_form_id }}" class="cc-product-buy-now" data-buy-button{% unless selected_variant.available %} disabled{% endunless %}><span class="cc-buy-flames" aria-hidden="true"><i style="--fire-x:10%;--fire-delay:-.2s;--fire-scale:.68">🔥</i><i style="--fire-x:36%;--fire-delay:-.8s;--fire-scale:.82">🔥</i><i style="--fire-x:64%;--fire-delay:-.4s;--fire-scale:.9">🔥</i><i style="--fire-x:90%;--fire-delay:-1s;--fire-scale:.65">🔥</i></span><span class="cc-purchase-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7L6 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></span><span data-button-label>{% if selected_variant.available %}Buy Now{% else %}Sold Out{% endif %}</span><span class="cc-buy-arrow" aria-hidden="true">›</span></button>
+        </div>
+      {% endif %}
       <dialog class="cc-product-lightbox"><button type="button" aria-label="Close image viewer">×</button><div></div></dialog>
       {% if offer_product != blank %}
         <script type="application/json" data-product-variants>{{ offer_product.variants | json }}</script>
@@ -704,7 +717,10 @@
       }
       purchaseButtons.forEach((button) => {
         button.disabled = !variant.available;
-        button.textContent = variant.available ? (button.classList.contains('cc-product-add') ? 'Add to Cart' : 'Buy Now') : 'Sold Out';
+        const buttonLabel = variant.available ? (button.classList.contains('cc-product-add') ? 'Add to Cart' : 'Buy Now') : 'Sold Out';
+        const buttonLabelNode = button.querySelector('[data-button-label]');
+        if (buttonLabelNode) buttonLabelNode.textContent = buttonLabel;
+        else button.textContent = buttonLabel;
       });
       const featuredId = variant.featured_media?.id || variant.featured_image?.id;
       if (featuredId) showMedia(`media-${featuredId}`);
@@ -2053,10 +2069,10 @@
     transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
   }
   #cc-product-{{ section.id }} .cc-product-thumbnail:hover,
-  #cc-product-{{ section.id }} .cc-product-thumbnail.is-active { border-color: var(--product-accent); }
+  #cc-product-{{ section.id }} .cc-product-thumbnail.is-active { border-color: var(--product-deal); }
   #cc-product-{{ section.id }} .cc-product-thumbnail.is-active {
     border-width: 2px;
-    box-shadow: 0 0 0 2px var(--product-accent-soft);
+    box-shadow: 0 0 0 2px rgba(255,49,92,.11);
   }
   #cc-product-{{ section.id }} .cc-product-thumbnail img,
   #cc-product-{{ section.id }} .cc-product-thumbnail video { width: 100%; height: 100%; object-fit: contain; }
@@ -2080,9 +2096,10 @@
     position: relative;
     place-items: center;
     overflow: hidden;
-    border: 0;
-    border-radius: 4px;
-    background: #eef4f7;
+    border: 4px solid #dc321f;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(220,50,31,.12);
   }
   #cc-product-{{ section.id }} .cc-product-media {
     display: none;
@@ -2197,7 +2214,7 @@
   #cc-product-{{ section.id }} .cc-product-price-box { padding: 13px 14px; border: 1px solid var(--product-deal); border-top: 0; border-radius: 0 0 7px 7px; background: var(--product-card); }
   #cc-product-{{ section.id }} .cc-product-price-box.no-promo { border-top: 1px solid var(--product-deal); border-radius: 7px; }
   #cc-product-{{ section.id }} .cc-product-price-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  #cc-product-{{ section.id }} .cc-product-current-price { color: var(--product-dark); font-size: clamp(36px, 4vw, 42px); line-height: 1; font-weight: 800; }
+  #cc-product-{{ section.id }} .cc-product-current-price { color: #e3262e; font-size: clamp(36px, 4vw, 42px); line-height: 1; font-weight: 850; }
   #cc-product-{{ section.id }} .cc-product-discount-stack { display: grid; gap: 3px; align-items: start; }
   #cc-product-{{ section.id }} .cc-product-old-price { display: block; margin: 0; color: rgba(17,24,38,.48); font-size: 12px; }
   #cc-product-{{ section.id }} .cc-product-save { padding: 4px 7px; border: 0; border-radius: 5px; background: var(--product-deal-soft); color: var(--product-deal); font-size: 12px; font-weight: 750; }
@@ -2235,14 +2252,25 @@
   #cc-product-{{ section.id }} .cc-product-quantity button { cursor: pointer; }
   #cc-product-{{ section.id }} .cc-product-quantity button:hover { background: var(--product-accent-soft); }
   #cc-product-{{ section.id }} .cc-product-quantity input { border-inline: 1px solid var(--product-border); appearance: textfield; }
-  #cc-product-{{ section.id }} .cc-product-actions,
-  #cc-product-{{ section.id }} .cc-product-sticky { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #cc-product-{{ section.id }} .cc-product-actions { display: grid; grid-template-columns: 1fr; gap: 12px; padding-top: 4px; }
+  #cc-product-{{ section.id }} .cc-product-sticky { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.15fr); gap: 10px; }
   #cc-product-{{ section.id }} .cc-product-add,
-  #cc-product-{{ section.id }} .cc-product-buy-now { min-height: 52px; padding: 0 16px; border-radius: 8px; color: var(--product-dark); font-weight: 800; cursor: pointer; }
-  #cc-product-{{ section.id }} .cc-product-add { border: 2px solid var(--product-accent); background: var(--product-card); }
-  #cc-product-{{ section.id }} .cc-product-add:hover { background: var(--product-accent-soft); }
-  #cc-product-{{ section.id }} .cc-product-buy-now { border: 2px solid var(--product-accent); background: var(--product-accent); }
-  #cc-product-{{ section.id }} .cc-product-buy-now:hover { border-color: var(--product-dark); background: var(--product-dark); color: #fff; }
+  #cc-product-{{ section.id }} .cc-product-buy-now { display: inline-flex; min-height: 54px; padding: 0 18px; position: relative; align-items: center; justify-content: center; gap: 9px; overflow: visible; border-radius: 10px; font-weight: 850; cursor: pointer; isolation: isolate; transition: border-color .2s ease, background .25s ease, box-shadow .25s ease, color .2s ease, transform .2s ease; }
+  #cc-product-{{ section.id }} .cc-product-add { border: 2px solid #f5b400; background: linear-gradient(135deg,#fff8dc,#ffedaa); color: #8b3f00; box-shadow: 0 7px 18px rgba(245,180,0,.16); }
+  #cc-product-{{ section.id }} .cc-product-add:hover { border-color: #e89a00; background: linear-gradient(135deg,#fff4c7,#ffe37c); transform: translateY(-1px); }
+  #cc-product-{{ section.id }} .cc-product-buy-now { min-height: 60px; border: 0; border-radius: 999px; background: linear-gradient(110deg,#d92d20,#f04424 52%,#ff641e); background-size: 180% 100%; color: #fff; box-shadow: 0 12px 28px rgba(217,45,32,.28),0 0 0 1px rgba(255,255,255,.14) inset; font-size: 18px; animation: cc-buy-button-glow 2.2s ease-in-out infinite alternate; }
+  #cc-product-{{ section.id }} .cc-product-buy-now:hover { background-position: 100% 50%; color: #fff; box-shadow: 0 15px 34px rgba(217,45,32,.38),0 0 0 2px rgba(255,255,255,.18) inset; transform: translateY(-2px); }
+  #cc-product-{{ section.id }} .cc-purchase-button-icon,
+  #cc-product-{{ section.id }} [data-button-label],
+  #cc-product-{{ section.id }} .cc-buy-arrow { position: relative; z-index: 4; }
+  #cc-product-{{ section.id }} .cc-purchase-button-icon { display: inline-grid; width: 22px; height: 22px; flex: 0 0 22px; place-items: center; }
+  #cc-product-{{ section.id }} .cc-purchase-button-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  #cc-product-{{ section.id }} .cc-buy-arrow { margin-left: 2px; font-size: 30px; font-weight: 500; line-height: 1; transition: transform .2s ease; }
+  #cc-product-{{ section.id }} .cc-product-buy-now:hover .cc-buy-arrow { transform: translateX(4px); }
+  #cc-product-{{ section.id }} .cc-buy-flames { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
+  #cc-product-{{ section.id }} .cc-buy-flames i { position: absolute; top: -12px; left: var(--fire-x); font-size: calc(21px * var(--fire-scale)); font-style: normal; line-height: 1; opacity: .9; filter: drop-shadow(0 0 7px rgba(255,69,0,.72)); transform-origin: 50% 90%; animation: cc-buy-fire-rise 1.25s ease-in-out var(--fire-delay) infinite alternate; }
+  #cc-product-{{ section.id }} .cc-product-buy-now:disabled { animation: none; }
+  #cc-product-{{ section.id }} .cc-product-buy-now:disabled .cc-buy-flames { display: none; }
   #cc-product-{{ section.id }} .cc-product-payment-methods {
     display: grid;
     gap: 8px;
@@ -2313,8 +2341,20 @@
     55% { transform: translateY(-1px) rotate(3deg) scale(1.08); filter: drop-shadow(0 0 9px rgba(255,49,0,.72)); }
     100% { transform: translateY(-2px) rotate(-2deg) scale(1.01); filter: drop-shadow(0 0 6px rgba(255,166,0,.72)); }
   }
+  @keyframes cc-buy-button-glow {
+    0% { box-shadow: 0 10px 24px rgba(217,45,32,.25),0 0 0 1px rgba(255,255,255,.14) inset; }
+    100% { box-shadow: 0 16px 36px rgba(217,45,32,.38),0 0 22px rgba(255,107,30,.34),0 0 0 2px rgba(255,255,255,.16) inset; }
+  }
+  @keyframes cc-buy-fire-rise {
+    0% { opacity: .48; transform: translate(-50%,8px) rotate(-8deg) scale(.78); }
+    55% { opacity: 1; transform: translate(-50%,-4px) rotate(4deg) scale(1.08); }
+    100% { opacity: .62; transform: translate(-50%,-13px) rotate(-3deg) scale(.94); }
+  }
   @media (prefers-reduced-motion: reduce) {
-    #cc-product-{{ section.id }} .cc-product-deal-flame { animation: none; }
+    #cc-product-{{ section.id }} .cc-product-deal-flame,
+    #cc-product-{{ section.id }} .cc-product-buy-now,
+    #cc-product-{{ section.id }} .cc-buy-flames i { animation: none; }
+    #cc-product-{{ section.id }} .cc-buy-flames i { opacity: .82; transform: translate(-50%,-5px); }
   }
 
   @media (max-width: 749px) {
@@ -2337,7 +2377,7 @@
     #cc-product-{{ section.id }} .cc-product-thumbnails { padding: 10px 12px 12px; flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnails::-webkit-scrollbar { display: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnail { flex-basis: 58px; width: 58px; height: 58px; scroll-snap-align: start; }
-    #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; border-radius: 9px 9px 0 0; }
+    #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; border-width: 2px; border-radius: 12px 12px 0 0; }
     #cc-product-{{ section.id }} .cc-product-media { padding: 0; }
     #cc-product-{{ section.id }} .cc-product-promo-head { min-height: 45px; padding: 9px 12px; align-items: flex-start; flex-wrap: wrap; font-size: 15px; }
     #cc-product-{{ section.id }} .cc-product-promo-head > strong { font-size: 20px; line-height: 1.2; }
@@ -2363,6 +2403,12 @@
     #cc-product-{{ section.id }} .cc-product-sticky { display: grid; position: fixed; z-index: 1000; right: 0; bottom: 0; left: 0; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--product-border); background: var(--product-card); box-shadow: 0 -4px 18px rgba(17,24,38,.08); opacity: 0; visibility: hidden; transform: translateY(100%); transition: opacity .22s ease, visibility .22s ease, transform .22s ease; }
     #cc-product-{{ section.id }} .cc-product-sticky.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
     #cc-product-{{ section.id }} .cc-product-sticky button { min-height: 50px; }
+    #cc-product-{{ section.id }} .cc-product-sticky .cc-product-add,
+    #cc-product-{{ section.id }} .cc-product-sticky .cc-product-buy-now { padding-inline: 10px; gap: 6px; font-size: 13px; }
+    #cc-product-{{ section.id }} .cc-product-sticky .cc-product-buy-now { border-radius: 999px; }
+    #cc-product-{{ section.id }} .cc-product-sticky .cc-purchase-button-icon { width: 18px; height: 18px; flex-basis: 18px; }
+    #cc-product-{{ section.id }} .cc-product-sticky .cc-buy-arrow { margin-left: 0; font-size: 24px; }
+    #cc-product-{{ section.id }} .cc-product-sticky .cc-buy-flames i { top: -8px; font-size: calc(16px * var(--fire-scale)); }
   }
 
   /* Vertical autoplay video in the driving-pain section. */

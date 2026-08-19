@@ -10,6 +10,30 @@
   assign product_review_count = section.settings.review_count
   assign product_sold_count = section.settings.sold_count
   assign product_rating_percent = product_rating | times: 20
+  assign product_rating_display = product_rating | times: 1.0
+  assign product_review_display = product_review_count
+  unless product_review_display contains '+'
+    assign product_review_display = product_review_display | append: '+'
+  endunless
+  assign sold_count_numeric = product_sold_count | remove: ',' | plus: 0
+  if sold_count_numeric >= 1000
+    assign sold_count_tenths = sold_count_numeric | times: 10 | divided_by: 1000
+    assign sold_count_major = sold_count_tenths | divided_by: 10
+    assign sold_count_minor = sold_count_tenths | modulo: 10
+    capture product_sold_display
+      echo sold_count_major
+      if sold_count_minor > 0
+        echo '.'
+        echo sold_count_minor
+      endif
+      echo 'K+'
+    endcapture
+  else
+    assign product_sold_display = product_sold_count
+    unless product_sold_display contains '+'
+      assign product_sold_display = product_sold_display | append: '+'
+    endunless
+  endif
   assign promotion_label = section.settings.promotion_title
   if promotion_label == blank or promotion_label == 'WELCOME OFFER · Limited-time deal'
     assign promotion_label = 'Welcome Deal'
@@ -239,11 +263,20 @@
             {% if offer_product != blank and section.settings.show_reviews and product_rating != blank or offer_product != blank and section.settings.show_sold_count and product_sold_count != blank %}
               <div class="cc-product-rating" aria-label="Product rating and sales summary">
                 {% if section.settings.show_reviews and product_rating != blank %}
-                  <span class="cc-product-stars" style="--rating-width: {{ product_rating_percent }}%" role="img" aria-label="{{ product_rating }} out of 5 stars"><span aria-hidden="true">★★★★★</span></span>
-                  <span class="cc-product-metric cc-product-score"><strong>{{ product_rating }}</strong><small>Average rating</small></span>
-                  {% if product_review_count != blank %}<a class="cc-product-metric cc-product-reviews" href="#reviews"><strong>{{ product_review_count }}</strong><small>Reviews</small></a>{% endif %}
+                  <div class="cc-product-rating-hero">
+                    <span class="cc-product-score-line"><strong>{{ product_rating_display }}</strong><small>/5</small></span>
+                    <span class="cc-product-stars" style="--rating-width: {{ product_rating_percent }}%" role="img" aria-label="{{ product_rating }} out of 5 stars"><span aria-hidden="true">★★★★★</span></span>
+                    <span class="cc-product-rating-meta"><b><span aria-hidden="true">✓</span> Excellent</b><small>Loved by customers</small></span>
+                  </div>
                 {% endif %}
-                {% if section.settings.show_sold_count and product_sold_count != blank %}<span class="cc-product-metric cc-product-sold"><strong>{{ product_sold_count }}</strong><small>Sold</small></span>{% endif %}
+                <div class="cc-product-proof-grid">
+                  {% if section.settings.show_reviews and product_review_count != blank %}
+                    <a class="cc-product-metric cc-product-reviews" href="#reviews"><span class="cc-product-proof-icon" aria-hidden="true">✓</span><span><strong>{{ product_review_display }}</strong><small>Verified Reviews</small></span></a>
+                  {% endif %}
+                  {% if section.settings.show_sold_count and product_sold_count != blank %}
+                    <span class="cc-product-metric cc-product-sold"><span class="cc-product-proof-icon" aria-hidden="true">🔥</span><span><strong>{{ product_sold_display }}</strong><small>Sold</small></span></span>
+                  {% endif %}
+                </div>
               </div>
             {% endif %}
           </div>
@@ -2133,79 +2166,85 @@
   #cc-product-{{ section.id }} .cc-product-counter { bottom: 12px; padding: 5px 9px; border-radius: 99px; font-size: 12px; }
   #cc-product-{{ section.id }} .cc-product-heading h2 { min-height: 0; margin: 0; color: var(--product-dark); font-size: clamp(19px, 1.7vw, 23px); line-height: 1.28; font-weight: 750; }
   #cc-product-{{ section.id }} .cc-product-rating {
-    display: inline-flex;
-    max-width: 100%;
-    margin-top: 13px;
-    padding: 8px 12px;
-    align-items: center;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    border: 1px solid rgba(217,231,240,.9);
-    border-radius: 14px;
-    background: linear-gradient(135deg,#fff,#f8fcff);
-    color: var(--product-text-muted);
-    box-shadow: 0 8px 24px rgba(17,24,38,.07);
-    scrollbar-width: none;
+    display: grid;
+    width: 100%;
+    margin-top: 14px;
+    padding: 10px;
+    grid-template-columns: minmax(170px,.95fr) minmax(230px,1.2fr);
+    gap: 10px;
+    border: 1px solid rgba(56,189,248,.22);
+    border-radius: 18px;
+    background: linear-gradient(135deg,#f4f9fc,#eef8ff);
+    color: var(--product-dark);
+    box-shadow: 0 12px 30px rgba(17,24,38,.08);
   }
-  #cc-product-{{ section.id }} .cc-product-rating::-webkit-scrollbar { display: none; }
-  #cc-product-{{ section.id }} .cc-product-stars {
-    display: inline-flex;
-    min-height: 38px;
-    padding: 0 14px 0 0;
+  #cc-product-{{ section.id }} .cc-product-rating-hero {
+    display: grid;
+    min-width: 0;
+    padding: 12px 14px;
+    grid-template-columns: auto minmax(0,1fr);
+    grid-template-areas: 'score stars' 'score meta';
+    column-gap: 13px;
     align-items: center;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-    font-size: clamp(20px,1.8vw,24px);
-    letter-spacing: 1px;
-    line-height: 1;
+    border-radius: 13px;
+    background: rgba(255,255,255,.82);
+    box-shadow: 0 5px 16px rgba(17,24,38,.05);
   }
+  #cc-product-{{ section.id }} .cc-product-score-line { display: inline-flex; grid-area: score; align-items: baseline; color: var(--product-dark); line-height: 1; }
+  #cc-product-{{ section.id }} .cc-product-score-line strong { font-size: clamp(38px,3.4vw,46px); font-weight: 900; letter-spacing: -.055em; }
+  #cc-product-{{ section.id }} .cc-product-score-line small { margin-left: 3px; color: var(--product-text-muted); font-size: 13px; font-weight: 750; }
+  #cc-product-{{ section.id }} .cc-product-stars { display: inline-flex; grid-area: stars; align-items: center; font-size: clamp(21px,1.9vw,25px); letter-spacing: 1px; line-height: 1; }
   #cc-product-{{ section.id }} .cc-product-stars > span {
     color: transparent;
-    background: linear-gradient(90deg,#F6B800 0 var(--rating-width),#E5E9EE var(--rating-width) 100%);
+    background: linear-gradient(90deg,#FFB000 0 var(--rating-width),#E5E9EE var(--rating-width) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     filter: drop-shadow(0 2px 2px rgba(143,98,0,.18));
   }
+  #cc-product-{{ section.id }} .cc-product-rating-meta { display: flex; min-width: 0; grid-area: meta; align-items: center; gap: 7px; }
+  #cc-product-{{ section.id }} .cc-product-rating-meta b { display: inline-flex; padding: 3px 7px; align-items: center; gap: 4px; border-radius: 999px; background: rgba(22,132,214,.1); color: #1684D6; font-size: 10px; font-weight: 800; white-space: nowrap; }
+  #cc-product-{{ section.id }} .cc-product-rating-meta small { overflow: hidden; color: var(--product-text-muted); font-size: 10px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+  #cc-product-{{ section.id }} .cc-product-proof-grid { display: grid; min-width: 0; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  #cc-product-{{ section.id }} .cc-product-rating > .cc-product-proof-grid:only-child,
+  #cc-product-{{ section.id }} .cc-product-proof-grid > :only-child { grid-column: 1 / -1; }
   #cc-product-{{ section.id }} .cc-product-metric {
-    display: grid;
-    min-width: 72px;
-    min-height: 38px;
-    padding: 0 13px;
-    align-content: center;
-    gap: 1px;
+    display: flex;
+    min-width: 0;
+    min-height: 72px;
+    padding: 11px 12px;
+    align-items: center;
+    gap: 9px;
     border: 0;
-    border-left: 1px solid var(--product-border);
-    border-radius: 0;
-    background: transparent;
+    border-radius: 13px;
+    background: rgba(255,255,255,.86);
     color: var(--product-dark);
     text-decoration: none;
-    box-shadow: none;
-    transition: color .2s ease,background-color .2s ease;
+    box-shadow: 0 5px 16px rgba(17,24,38,.05);
+    transition: color .2s ease, background-color .2s ease, box-shadow .2s ease, transform .2s ease;
   }
+  #cc-product-{{ section.id }} .cc-product-proof-icon { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border-radius: 50%; background: rgba(22,132,214,.1); color: #1684D6; font-size: 17px; font-weight: 900; }
+  #cc-product-{{ section.id }} .cc-product-sold .cc-product-proof-icon { background: rgba(255,176,0,.13); font-size: 18px; }
+  #cc-product-{{ section.id }} .cc-product-metric > span:last-child { display: grid; min-width: 0; gap: 3px; }
   #cc-product-{{ section.id }} .cc-product-metric strong {
     color: var(--product-dark);
-    font-size: 15px;
-    font-weight: 800;
+    font-size: clamp(18px,1.6vw,22px);
+    font-weight: 900;
     line-height: 1.05;
   }
   #cc-product-{{ section.id }} .cc-product-metric small {
     color: var(--product-text-muted);
-    font-size: 9.5px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     letter-spacing: .025em;
     line-height: 1.15;
-    text-transform: none;
+    text-transform: uppercase;
   }
-  #cc-product-{{ section.id }} .cc-product-score strong { color: #1684d6; }
   #cc-product-{{ section.id }} .cc-product-reviews:hover,
   #cc-product-{{ section.id }} .cc-product-reviews:focus-visible {
-    background: rgba(56,189,248,.08);
+    background: #fff;
     color: #1684d6;
-  }
-  #cc-product-{{ section.id }} .cc-product-sold {
-    min-width: 96px;
-    padding-right: 4px;
+    box-shadow: 0 8px 22px rgba(22,132,214,.13);
+    transform: translateY(-2px);
   }
   #cc-product-{{ section.id }} .cc-product-purchase { margin-top: 16px; }
   #cc-product-{{ section.id }} .cc-product-promo-head { display: flex; min-height: 46px; padding: 10px 14px; position: relative; align-items: center; justify-content: space-between; gap: 14px; overflow: hidden; border: 1px solid var(--product-deal); border-bottom: 0; border-radius: 7px 7px 0 0; background: var(--product-deal-soft); color: #e80036; font-size: 14px; }
@@ -2366,15 +2405,22 @@
     #cc-product-{{ section.id }} .cc-product-heading { order: 2; padding: 2px 1px 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
     #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 16px; line-height: 1.32; font-weight: 800; }
-    #cc-product-{{ section.id }} .cc-product-rating { gap: 0; margin-top: 7px; padding: 6px 9px; align-items: center; border-radius: 11px; }
-    #cc-product-{{ section.id }} .cc-product-stars { min-height: 30px; padding: 0 10px 0 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 17px; letter-spacing: .5px; }
-    #cc-product-{{ section.id }} .cc-product-metric { display: inline-flex; min-width: 0; min-height: 30px; padding: 0 8px; align-items: center; gap: 3px; border: 0; border-left: 1px solid var(--product-border); border-radius: 0; background: transparent; box-shadow: none; }
-    #cc-product-{{ section.id }} .cc-product-metric strong { font-size: 12px; }
-    #cc-product-{{ section.id }} .cc-product-metric small { font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; }
-    #cc-product-{{ section.id }} .cc-product-score small { display: none; }
-    #cc-product-{{ section.id }} .cc-product-sold { min-width: 0; padding-right: 0; }
+    #cc-product-{{ section.id }} .cc-product-rating { margin-top: 9px; padding: 8px; grid-template-columns: 1fr; gap: 8px; border-radius: 16px; }
+    #cc-product-{{ section.id }} .cc-product-rating-hero { min-height: 76px; padding: 10px 12px; grid-template-columns: auto minmax(0,1fr); column-gap: 11px; border-radius: 12px; }
+    #cc-product-{{ section.id }} .cc-product-score-line strong { font-size: 38px; }
+    #cc-product-{{ section.id }} .cc-product-score-line small { font-size: 12px; }
+    #cc-product-{{ section.id }} .cc-product-stars { font-size: clamp(22px,6vw,25px); letter-spacing: .5px; }
+    #cc-product-{{ section.id }} .cc-product-rating-meta { gap: 6px; }
+    #cc-product-{{ section.id }} .cc-product-rating-meta b { font-size: 9px; }
+    #cc-product-{{ section.id }} .cc-product-rating-meta small { font-size: 9px; }
+    #cc-product-{{ section.id }} .cc-product-proof-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    #cc-product-{{ section.id }} .cc-product-metric { min-height: 66px; padding: 9px 8px; gap: 7px; border-radius: 12px; }
+    #cc-product-{{ section.id }} .cc-product-proof-icon { width: 30px; height: 30px; flex-basis: 30px; font-size: 15px; }
+    #cc-product-{{ section.id }} .cc-product-sold .cc-product-proof-icon { font-size: 16px; }
+    #cc-product-{{ section.id }} .cc-product-metric strong { font-size: clamp(17px,5vw,20px); }
+    #cc-product-{{ section.id }} .cc-product-metric small { font-size: 8.5px; letter-spacing: .015em; }
     #cc-product-{{ section.id }} .cc-product-reviews:hover,
-    #cc-product-{{ section.id }} .cc-product-reviews:focus-visible { border-color: transparent; box-shadow: none; transform: none; }
+    #cc-product-{{ section.id }} .cc-product-reviews:focus-visible { box-shadow: 0 5px 16px rgba(17,24,38,.05); transform: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnails { padding: 1px 1px 4px; gap: 8px; }
     #cc-product-{{ section.id }} .cc-product-thumbnail { flex-basis: 62px; width: 62px; height: 62px; border-radius: 7px; }
     #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; border: 0; border-radius: 12px; box-shadow: 0 7px 20px rgba(17,24,38,.07); }

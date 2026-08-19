@@ -6,6 +6,7 @@
   assign selected_variant = offer_product.selected_or_first_available_variant
   assign product_image = offer_product.featured_image
   assign product_form_id = 'cc-product-form-' | append: section.id
+  assign product_terms_form_id = 'cc-product-terms-form-' | append: section.id
   assign product_rating = section.settings.rating_score
   assign product_review_count = section.settings.review_count
   assign product_sold_count = section.settings.sold_count
@@ -229,7 +230,7 @@
           </div>
         </div>
 
-          <div class="cc-product-info">
+        <div class="cc-product-info">
           <div class="cc-product-heading">
             <h2 id="cc-product-title-{{ section.id }}">{% if offer_product != blank %}{{ offer_product.title | escape }}{% else %}Select a Shopify product in Theme Editor{% endif %}</h2>
             {% if offer_product != blank and section.settings.show_reviews and product_rating != blank or offer_product != blank and section.settings.show_sold_count and product_sold_count != blank %}
@@ -250,14 +251,28 @@
             {% endif %}
             <div class="cc-product-price-box{% unless section.settings.show_promotion %} no-promo{% endunless %}">
               {% if selected_variant != blank %}
-                <div class="cc-product-price-row"><span class="cc-product-current-price" data-current-price>{{ selected_variant.price | money }}</span><span class="cc-product-save{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-save-badge>Save <span data-save-amount>{{ selected_variant.compare_at_price | minus: selected_variant.price | money }}</span></span></div>
-                <s class="cc-product-old-price{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-old-price>{{ selected_variant.compare_at_price | money }}</s>
+                <div class="cc-product-price-row">
+                  <span class="cc-product-current-price" data-current-price>{{ selected_variant.price | money }}</span>
+                  <span class="cc-product-discount-stack">
+                    <span class="cc-product-save{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-save-badge>New shopper saves <span data-save-amount>{{ selected_variant.compare_at_price | minus: selected_variant.price | money }}</span></span>
+                    <s class="cc-product-old-price{% unless selected_variant.compare_at_price > selected_variant.price %} is-hidden{% endunless %}" data-old-price>{{ selected_variant.compare_at_price | money }}</s>
+                  </span>
+                </div>
               {% else %}
                 <p class="cc-product-empty">Select a Shopify product to display its price.</p>
               {% endif %}
               <p class="cc-product-extra">{{ section.settings.extra_offer }}</p>
               {% if localization.country != blank %}<p class="cc-product-market-price"><span aria-hidden="true">◎</span> Price shown for <strong>{{ localization.country.name }}</strong> in <strong>{{ localization.country.currency.iso_code }}</strong></p>{% endif %}
             </div>
+
+            {% if offer_product != blank %}
+              {% form 'product', offer_product, id: product_terms_form_id, class: 'cc-product-payment-terms' %}
+                <input type="hidden" name="id" value="{{ selected_variant.id }}" data-payment-terms-variant>
+                <span class="cc-product-payment-icon" aria-hidden="true">▦</span>
+                <span class="cc-product-payment-copy"><strong>Flexible payment options</strong>{{ form | payment_terms }}</span>
+                <span class="cc-product-row-arrow" aria-hidden="true">›</span>
+              {% endform %}
+            {% endif %}
 
             {% if section.settings.show_coupon %}
               <details class="cc-product-coupon"><summary><span aria-hidden="true">%</span><strong>{{ section.settings.coupon_label }}</strong><span aria-hidden="true">⌄</span></summary><div>{{ section.settings.coupon_details }}</div></details>
@@ -610,6 +625,7 @@
     }
     const optionGroups = [...section.querySelectorAll('[data-option-position]')];
     const variantIdInput = section.querySelector('[data-variant-id]');
+    const paymentTermsVariantInput = section.querySelector('[data-payment-terms-variant]');
     const currentPrice = section.querySelector('[data-current-price]');
     const oldPrice = section.querySelector('[data-old-price]');
     const saveBadge = section.querySelector('[data-save-badge]');
@@ -682,6 +698,10 @@
     const updateVariant = (variant) => {
       if (!variant) return;
       if (variantIdInput) variantIdInput.value = variant.id;
+      if (paymentTermsVariantInput) {
+        paymentTermsVariantInput.value = variant.id;
+        paymentTermsVariantInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
       const localizedMoney = variantMoney[String(variant.id)] || {};
       if (currentPrice) currentPrice.textContent = localizedMoney.price || formatMoney(variant.price);
       const discounted = Number(variant.compare_at_price || 0) > Number(variant.price || 0);
@@ -1984,6 +2004,8 @@
     --product-border: #D9E7F0;
     --product-accent-soft: rgba(56, 189, 248, 0.10);
     --product-accent-medium: rgba(56, 189, 248, 0.20);
+    --product-deal: #ff315c;
+    --product-deal-soft: #fff0f3;
     --product-text-muted: rgba(17, 24, 38, 0.68);
     width: 100%;
     padding: clamp(32px, 4vw, 56px) max(24px, calc((100vw - 1180px) / 2));
@@ -2168,30 +2190,40 @@
     background: linear-gradient(135deg,#fffdf5,#fff3bd);
   }
   #cc-product-{{ section.id }} .cc-product-purchase { margin-top: 16px; }
-  #cc-product-{{ section.id }} .cc-product-promo-head { display: flex; min-height: 46px; padding: 10px 14px; align-items: center; justify-content: space-between; gap: 14px; border-radius: 7px 7px 0 0; background: var(--product-accent); color: var(--product-dark); font-size: 13px; }
-  #cc-product-{{ section.id }} .cc-product-promo-head strong { font-weight: 800; }
-  #cc-product-{{ section.id }} .cc-product-price-box { padding: 13px 14px; border: 1px solid var(--product-accent); border-top: 0; border-radius: 0 0 7px 7px; background: var(--product-card); }
-  #cc-product-{{ section.id }} .cc-product-price-box.no-promo { border-top: 1px solid var(--product-accent); border-radius: 7px; }
+  #cc-product-{{ section.id }} .cc-product-promo-head { display: flex; min-height: 46px; padding: 10px 14px; position: relative; align-items: center; justify-content: space-between; gap: 14px; overflow: hidden; border: 1px solid var(--product-deal); border-bottom: 0; border-radius: 7px 7px 0 0; background: var(--product-deal-soft); color: #e80036; font-size: 14px; }
+  #cc-product-{{ section.id }} .cc-product-promo-head::after { content: '➜'; position: absolute; top: 50%; right: 20px; color: rgba(255,49,92,.09); font-size: 72px; line-height: 1; transform: translateY(-50%) rotate(-18deg); }
+  #cc-product-{{ section.id }} .cc-product-promo-head > * { position: relative; z-index: 1; }
+  #cc-product-{{ section.id }} .cc-product-promo-head strong { font-size: 1.15em; font-weight: 850; }
+  #cc-product-{{ section.id }} .cc-product-price-box { padding: 13px 14px; border: 1px solid var(--product-deal); border-top: 0; border-radius: 0 0 7px 7px; background: var(--product-card); }
+  #cc-product-{{ section.id }} .cc-product-price-box.no-promo { border-top: 1px solid var(--product-deal); border-radius: 7px; }
   #cc-product-{{ section.id }} .cc-product-price-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
   #cc-product-{{ section.id }} .cc-product-current-price { color: var(--product-dark); font-size: clamp(36px, 4vw, 42px); line-height: 1; font-weight: 800; }
-  #cc-product-{{ section.id }} .cc-product-old-price { display: block; margin-top: 5px; color: rgba(17,24,38,.45); font-size: 14px; }
-  #cc-product-{{ section.id }} .cc-product-save { padding: 5px 8px; border: 1px solid rgba(56,189,248,.35); border-radius: 5px; background: rgba(56,189,248,.14); color: var(--product-dark); font-size: 13px; font-weight: 700; }
+  #cc-product-{{ section.id }} .cc-product-discount-stack { display: grid; gap: 3px; align-items: start; }
+  #cc-product-{{ section.id }} .cc-product-old-price { display: block; margin: 0; color: rgba(17,24,38,.48); font-size: 12px; }
+  #cc-product-{{ section.id }} .cc-product-save { padding: 4px 7px; border: 0; border-radius: 5px; background: var(--product-deal-soft); color: var(--product-deal); font-size: 12px; font-weight: 750; }
   #cc-product-{{ section.id }} .is-hidden { display: none !important; }
   #cc-product-{{ section.id }} .cc-product-extra { margin: 7px 0 0; color: var(--product-text-muted); font-size: 13px; }
   #cc-product-{{ section.id }} .cc-product-market-price { display: flex; gap: 6px; margin: 8px 0 0; align-items: center; color: var(--product-text-muted); font-size: 11px; }
   #cc-product-{{ section.id }} .cc-product-market-price > span { color: var(--product-accent); font-size: 15px; }
   #cc-product-{{ section.id }} .cc-product-market-price strong { color: var(--product-dark); font-weight: 750; }
-  #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 10px; border: 1px solid rgba(56,189,248,.25); border-radius: 7px; background: var(--product-accent-soft); }
-  #cc-product-{{ section.id }} .cc-product-coupon summary { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding: 11px 12px; align-items: center; color: var(--product-dark); cursor: pointer; list-style: none; }
-  #cc-product-{{ section.id }} .cc-product-coupon summary > span { color: var(--product-accent); }
-  #cc-product-{{ section.id }} .cc-product-coupon > div { padding: 0 38px 12px; color: var(--product-text-muted); font-size: 13px; }
-  #cc-product-{{ section.id }} .cc-product-coupon:hover { background: rgba(56,189,248,.17); }
+  #cc-product-{{ section.id }} .cc-product-payment-terms { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; min-height: 44px; margin-top: 9px; padding: 8px 12px; align-items: center; border: 0; border-radius: 0; background: #f7f8fa; color: var(--product-dark); }
+  #cc-product-{{ section.id }} .cc-product-payment-terms > input { display: none; }
+  #cc-product-{{ section.id }} .cc-product-payment-icon { color: var(--product-accent); font-size: 18px; }
+  #cc-product-{{ section.id }} .cc-product-payment-copy { display: grid; gap: 2px; min-width: 0; font-size: 12px; }
+  #cc-product-{{ section.id }} .cc-product-payment-copy strong { font-weight: 600; }
+  #cc-product-{{ section.id }} .cc-product-payment-copy shopify-payment-terms { color: var(--product-text-muted); font-size: 11px; }
+  #cc-product-{{ section.id }} .cc-product-row-arrow { color: var(--product-dark); font-size: 22px; line-height: 1; }
+  #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 9px; border: 0; border-radius: 0; background: var(--product-deal-soft); }
+  #cc-product-{{ section.id }} .cc-product-coupon summary { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding: 11px 12px; align-items: center; color: var(--product-deal); cursor: pointer; list-style: none; }
+  #cc-product-{{ section.id }} .cc-product-coupon summary > span { color: var(--product-deal); }
+  #cc-product-{{ section.id }} .cc-product-coupon > div { padding: 0 38px 12px; color: #b31838; font-size: 13px; }
+  #cc-product-{{ section.id }} .cc-product-coupon:hover { background: #ffe7ec; }
   #cc-product-{{ section.id }} .cc-product-divider { margin: 16px 0; border-top: 1px solid var(--product-border); }
   #cc-product-{{ section.id }} .cc-product-form-new { display: grid; gap: 16px; }
   #cc-product-{{ section.id }} .cc-product-option { min-width: 0; margin: 0; padding: 0; border: 0; }
   #cc-product-{{ section.id }} .cc-product-option legend { margin-bottom: 9px; color: var(--product-dark); font-size: 15px; font-weight: 600; }
-  #cc-product-{{ section.id }} .cc-product-option-values { display: flex; gap: 10px; flex-wrap: wrap; }
-  #cc-product-{{ section.id }} .cc-product-option-value { display: grid; min-width: 62px; min-height: 44px; padding: 5px 9px; position: relative; place-items: center; gap: 4px; border: 1px solid var(--product-border); border-radius: 8px; background: var(--product-card); color: var(--product-dark); cursor: pointer; font-size: 12px; }
+  #cc-product-{{ section.id }} .cc-product-option-values { display: grid; grid-template-columns: repeat(auto-fill,minmax(72px,1fr)); gap: 10px; }
+  #cc-product-{{ section.id }} .cc-product-option-value { display: grid; width: 100%; min-width: 0; min-height: 44px; padding: 5px 7px; position: relative; place-items: center; gap: 4px; border: 1px solid var(--product-border); border-radius: 6px; background: var(--product-card); color: var(--product-dark); cursor: pointer; font-size: 11px; line-height: 1.2; }
   #cc-product-{{ section.id }} .cc-product-option-value img { width: 54px; height: 54px; object-fit: contain; }
   #cc-product-{{ section.id }} .cc-product-option-value:hover,
   #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-color: var(--product-accent); }
@@ -2285,27 +2317,45 @@
   @keyframes cc-product-in { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
 
   @media (max-width: 749px) {
-    #cc-product-{{ section.id }} { padding: 12px 14px calc(92px + env(safe-area-inset-bottom)); overflow: hidden; }
+    #cc-product-{{ section.id }} { padding: 10px 14px calc(92px + env(safe-area-inset-bottom)); overflow: hidden; background: #fff; }
     #cc-product-{{ section.id }} .cc-product-layout { display: flex; flex-direction: column; gap: 12px; }
     #cc-product-{{ section.id }} .cc-product-info { display: contents; }
-    #cc-product-{{ section.id }} .cc-product-heading { order: 1; padding: 15px; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
-    #cc-product-{{ section.id }} .cc-product-gallery { order: 2; display: flex; padding: 0; flex-direction: column-reverse; gap: 0; overflow: hidden; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
-    #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 14px; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
-    #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 18px; }
-    #cc-product-{{ section.id }} .cc-product-rating { gap: 7px; }
-    #cc-product-{{ section.id }} .cc-product-stars { min-height: 44px; padding: 6px 9px; font-size: 21px; letter-spacing: 1px; }
-    #cc-product-{{ section.id }} .cc-product-metric { min-width: 70px; min-height: 44px; padding: 5px 9px; }
-    #cc-product-{{ section.id }} .cc-product-sold { min-width: 96px; }
+    #cc-product-{{ section.id }} .cc-product-gallery { order: 1; display: flex; padding: 0; flex-direction: column-reverse; gap: 0; overflow: hidden; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
+    #cc-product-{{ section.id }} .cc-product-heading { order: 2; padding: 2px 1px 0; border: 0; border-radius: 0; background: transparent; }
+    #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
+    #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 16px; line-height: 1.32; font-weight: 800; }
+    #cc-product-{{ section.id }} .cc-product-rating { gap: 5px; margin-top: 7px; align-items: center; }
+    #cc-product-{{ section.id }} .cc-product-stars { min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; font-size: 18px; letter-spacing: 1px; }
+    #cc-product-{{ section.id }} .cc-product-metric { display: inline-flex; min-width: 0; min-height: 0; padding: 0; align-items: baseline; gap: 3px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+    #cc-product-{{ section.id }} .cc-product-metric strong { font-size: 12px; }
+    #cc-product-{{ section.id }} .cc-product-metric small { font-size: 11px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+    #cc-product-{{ section.id }} .cc-product-score small { display: none; }
+    #cc-product-{{ section.id }} .cc-product-sold { min-width: 0; }
+    #cc-product-{{ section.id }} .cc-product-sold::before { content: '|'; margin-right: 2px; color: rgba(17,24,38,.35); }
+    #cc-product-{{ section.id }} .cc-product-reviews:hover,
+    #cc-product-{{ section.id }} .cc-product-reviews:focus-visible { border-color: transparent; box-shadow: none; transform: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnails { padding: 10px 12px 12px; flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnails::-webkit-scrollbar { display: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnail { flex-basis: 58px; width: 58px; height: 58px; scroll-snap-align: start; }
     #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; border-radius: 9px 9px 0 0; }
     #cc-product-{{ section.id }} .cc-product-media { padding: 0; }
-    #cc-product-{{ section.id }} .cc-product-current-price { font-size: 34px; }
-    #cc-product-{{ section.id }} .cc-product-promo-head { align-items: flex-start; flex-wrap: wrap; }
-    #cc-product-{{ section.id }} .cc-product-option-values { flex-wrap: nowrap; overflow-x: auto; padding: 2px 8px 8px 2px; scrollbar-width: none; }
-    #cc-product-{{ section.id }} .cc-product-option-values::-webkit-scrollbar { display: none; }
-    #cc-product-{{ section.id }} .cc-product-option-value { flex: 0 0 62px; }
+    #cc-product-{{ section.id }} .cc-product-promo-head { min-height: 45px; padding: 9px 12px; align-items: flex-start; flex-wrap: wrap; font-size: 15px; }
+    #cc-product-{{ section.id }} .cc-product-promo-head > strong { font-size: 20px; line-height: 1.2; }
+    #cc-product-{{ section.id }} .cc-product-promo-head > span { font-size: 11px; }
+    #cc-product-{{ section.id }} .cc-product-price-box { padding: 12px; }
+    #cc-product-{{ section.id }} .cc-product-current-price { font-size: clamp(36px,11vw,44px); }
+    #cc-product-{{ section.id }} .cc-product-price-row { gap: 8px; align-items: center; }
+    #cc-product-{{ section.id }} .cc-product-save { font-size: 11px; }
+    #cc-product-{{ section.id }} .cc-product-extra { margin-top: 6px; }
+    #cc-product-{{ section.id }} .cc-product-market-price { flex-wrap: wrap; line-height: 1.25; }
+    #cc-product-{{ section.id }} .cc-product-payment-terms,
+    #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 8px; }
+    #cc-product-{{ section.id }} .cc-product-divider { margin: 12px 0; }
+    #cc-product-{{ section.id }} .cc-product-option legend { margin-bottom: 10px; font-size: 14px; }
+    #cc-product-{{ section.id }} .cc-product-option-values { grid-template-columns: repeat(auto-fill,minmax(58px,1fr)); gap: 10px 8px; overflow: visible; padding: 0; }
+    #cc-product-{{ section.id }} .cc-product-option-value { min-height: 0; padding: 3px; gap: 5px; border-radius: 3px; font-size: 9px; }
+    #cc-product-{{ section.id }} .cc-product-option-value img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
+    #cc-product-{{ section.id }} .cc-product-option-value.is-selected { border-color: var(--product-dark); background: var(--product-card); }
     #cc-product-{{ section.id }} .cc-product-actions { display: none; }
     #cc-product-{{ section.id }} .cc-product-trust-grid { gap: 7px; }
     #cc-product-{{ section.id }} .cc-product-trust-item { min-height: 116px; padding: 11px 5px 9px; }

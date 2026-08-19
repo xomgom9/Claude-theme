@@ -229,13 +229,17 @@
           </div>
         </div>
 
-        <div class="cc-product-info">
+          <div class="cc-product-info">
           <div class="cc-product-heading">
             <h2 id="cc-product-title-{{ section.id }}">{% if offer_product != blank %}{{ offer_product.title | escape }}{% else %}Select a Shopify product in Theme Editor{% endif %}</h2>
             {% if offer_product != blank and section.settings.show_reviews and product_rating != blank or offer_product != blank and section.settings.show_sold_count and product_sold_count != blank %}
-              <div class="cc-product-rating">
-                {% if section.settings.show_reviews and product_rating != blank %}<span class="cc-product-stars" style="--rating-width: {{ product_rating_percent }}%" role="img" aria-label="{{ product_rating }} out of 5 stars"><span aria-hidden="true">★★★★★</span></span><strong>{{ product_rating }}</strong>{% if product_review_count != blank %}<span class="cc-product-separator">|</span><a href="#reviews">{{ product_review_count }} Reviews</a>{% endif %}{% endif %}
-                {% if section.settings.show_sold_count and product_sold_count != blank %}<span class="cc-product-separator">|</span><span class="cc-product-sold">{{ product_sold_count }} sold</span>{% endif %}
+              <div class="cc-product-rating" aria-label="Product rating and sales summary">
+                {% if section.settings.show_reviews and product_rating != blank %}
+                  <span class="cc-product-stars" style="--rating-width: {{ product_rating_percent }}%" role="img" aria-label="{{ product_rating }} out of 5 stars"><span aria-hidden="true">★★★★★</span></span>
+                  <span class="cc-product-metric cc-product-score"><strong>{{ product_rating }}</strong><small>Average rating</small></span>
+                  {% if product_review_count != blank %}<a class="cc-product-metric cc-product-reviews" href="#reviews"><strong>{{ product_review_count }}</strong><small>Reviews</small></a>{% endif %}
+                {% endif %}
+                {% if section.settings.show_sold_count and product_sold_count != blank %}<span class="cc-product-metric cc-product-sold"><strong>{{ product_sold_count }}</strong><small>Sold</small></span>{% endif %}
               </div>
             {% endif %}
           </div>
@@ -252,6 +256,7 @@
                 <p class="cc-product-empty">Select a Shopify product to display its price.</p>
               {% endif %}
               <p class="cc-product-extra">{{ section.settings.extra_offer }}</p>
+              {% if localization.country != blank %}<p class="cc-product-market-price"><span aria-hidden="true">◎</span> Price shown for <strong>{{ localization.country.name }}</strong> in <strong>{{ localization.country.currency.iso_code }}</strong></p>{% endif %}
             </div>
 
             {% if section.settings.show_coupon %}
@@ -308,7 +313,18 @@
 
       {% if offer_product != blank and section.settings.show_sticky_mobile %}<div class="cc-product-sticky"><button type="submit" name="add" form="{{ product_form_id }}" class="cc-product-add">Add to Cart</button><button type="submit" name="return_to" value="/checkout" form="{{ product_form_id }}" class="cc-product-buy-now">Buy Now</button></div>{% endif %}
       <dialog class="cc-product-lightbox"><button type="button" aria-label="Close image viewer">×</button><div></div></dialog>
-      {% if offer_product != blank %}<script type="application/json" data-product-variants>{{ offer_product.variants | json }}</script>{% endif %}
+      {% if offer_product != blank %}
+        <script type="application/json" data-product-variants>{{ offer_product.variants | json }}</script>
+        <script type="application/json" data-product-money>{
+          {% for variant in offer_product.variants %}
+            "{{ variant.id }}": {
+              "price": {{ variant.price | money | json }},
+              "compareAt": {{ variant.compare_at_price | money | json }},
+              "savings": {{ variant.compare_at_price | minus: variant.price | money | json }}
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        }</script>
+      {% endif %}
     </section>
 
     <section class="cc-section cc-guarantees" id="guarantees" style="background-image:url('{{ 'background-risk-free-purchase-peace-of-mind.jpg' | asset_url }}')"><div class="cc-wrap"><div class="cc-heading"><p class="cc-eyebrow">SHOP WITH CONFIDENCE</p><h2>Risk-Free Purchase, Peace of Mind</h2></div><div class="cc-guarantee-grid"><article><div class="cc-round-icon"><img src="{{ '30-day-money-back-guarantee.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></div><h3>30-Day Money-Back Guarantee</h3><p>Should we not meet your expectations, we offer a full refund within 30 days.</p></article><article><div class="cc-round-icon"><img src="{{ '24-7-quality-customer-service.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></div><h3>24/7 Quality Customer Service</h3><p>Our quality customer service team is here to help you 24 hours a day.</p></article><article><div class="cc-round-icon"><img src="{{ 'powered-by-real-users.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></div><h3>Powered by Real Users</h3><p>Real-user experience drives our development and testing to create the ultimate solution.</p></article></div></div></section>
@@ -585,6 +601,13 @@
     } catch (error) {
       console.error('Unable to load product variants', error);
     }
+    const variantMoneyNode = section.querySelector('[data-product-money]');
+    let variantMoney = {};
+    try {
+      variantMoney = variantMoneyNode ? JSON.parse(variantMoneyNode.textContent) : {};
+    } catch (error) {
+      console.error('Unable to load localized variant prices', error);
+    }
     const optionGroups = [...section.querySelectorAll('[data-option-position]')];
     const variantIdInput = section.querySelector('[data-variant-id]');
     const currentPrice = section.querySelector('[data-current-price]');
@@ -599,10 +622,21 @@
     const stage = section.querySelector('.cc-product-media-stage');
     const lightbox = section.querySelector('.cc-product-lightbox');
     const moneyFormat = {{ shop.money_format | json }};
+    const currencyCode = {{ localization.country.currency.iso_code | default: shop.currency | json }};
+    const localeCode = {{ localization.language.iso_code | default: request.locale.iso_code | json }};
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const formatMoney = (cents) => {
       const value = Number(cents || 0);
+      try {
+        return new Intl.NumberFormat(localeCode || undefined, {
+          style: 'currency',
+          currency: currencyCode,
+          currencyDisplay: 'narrowSymbol'
+        }).format(value / 100);
+      } catch (error) {
+        // Fall back to the shop format if the visitor's browser lacks Intl data.
+      }
       const token = moneyFormat.match(/\{\{\s*(\w+)\s*\}\}/)?.[1] || 'amount';
       let amount;
       if (token.includes('no_decimals')) amount = Math.round(value / 100).toLocaleString();
@@ -648,12 +682,13 @@
     const updateVariant = (variant) => {
       if (!variant) return;
       if (variantIdInput) variantIdInput.value = variant.id;
-      if (currentPrice) currentPrice.textContent = formatMoney(variant.price);
+      const localizedMoney = variantMoney[String(variant.id)] || {};
+      if (currentPrice) currentPrice.textContent = localizedMoney.price || formatMoney(variant.price);
       const discounted = Number(variant.compare_at_price || 0) > Number(variant.price || 0);
       oldPrice?.classList.toggle('is-hidden', !discounted);
       saveBadge?.classList.toggle('is-hidden', !discounted);
-      if (oldPrice && discounted) oldPrice.textContent = formatMoney(variant.compare_at_price);
-      if (saveAmount && discounted) saveAmount.textContent = formatMoney(variant.compare_at_price - variant.price);
+      if (oldPrice && discounted) oldPrice.textContent = localizedMoney.compareAt || formatMoney(variant.compare_at_price);
+      if (saveAmount && discounted) saveAmount.textContent = localizedMoney.savings || formatMoney(variant.compare_at_price - variant.price);
       if (stock) {
         stock.classList.toggle('is-sold-out', !variant.available);
         stock.lastChild.textContent = variant.available ? 'In stock' : 'Sold out';
@@ -2042,8 +2077,9 @@
     display: none;
     width: 100%;
     height: 100%;
-    padding: clamp(10px, 2vw, 22px);
+    padding: 0;
     place-items: center;
+    overflow: hidden;
   }
   #cc-product-{{ section.id }} .cc-product-media.is-active { display: grid; animation: cc-product-in .34s cubic-bezier(.22,1,.36,1); }
   #cc-product-{{ section.id }} .cc-product-media-empty { align-content: center; color: var(--product-text-muted); text-align: center; }
@@ -2053,7 +2089,7 @@
   #cc-product-{{ section.id }} .cc-product-media video,
   #cc-product-{{ section.id }} .cc-product-media iframe,
   #cc-product-{{ section.id }} .cc-product-media model-viewer { width: 100%; height: 100%; object-fit: contain; border: 0; }
-  #cc-product-{{ section.id }} .cc-product-media[data-media-type="image"] img { cursor: zoom-in; transition: transform .35s cubic-bezier(.22,1,.36,1); }
+  #cc-product-{{ section.id }} .cc-product-media[data-media-type="image"] img { object-fit: cover; object-position: center; cursor: zoom-in; transition: transform .35s cubic-bezier(.22,1,.36,1); }
   @media (hover: hover) and (pointer: fine) { #cc-product-{{ section.id }} .cc-product-media[data-media-type="image"]:hover img { transform: scale(1.045); } }
   #cc-product-{{ section.id }} .cc-product-zoom,
   #cc-product-{{ section.id }} .cc-product-counter {
@@ -2066,31 +2102,71 @@
   #cc-product-{{ section.id }} .cc-product-zoom { display: grid; width: 40px; height: 40px; top: 12px; place-items: center; border-radius: 50%; cursor: pointer; font-size: 22px; }
   #cc-product-{{ section.id }} .cc-product-counter { bottom: 12px; padding: 5px 9px; border-radius: 99px; font-size: 12px; }
   #cc-product-{{ section.id }} .cc-product-heading h2 { min-height: 0; margin: 0; color: var(--product-dark); font-size: clamp(19px, 1.7vw, 23px); line-height: 1.28; font-weight: 750; }
-  #cc-product-{{ section.id }} .cc-product-rating { display: flex; gap: 7px; margin-top: 9px; align-items: center; flex-wrap: wrap; color: var(--product-text-muted); font-size: 14px; }
-  #cc-product-{{ section.id }} .cc-product-stars { display: inline-flex; letter-spacing: 1px; }
+  #cc-product-{{ section.id }} .cc-product-rating { display: flex; gap: 9px; margin-top: 13px; align-items: stretch; flex-wrap: wrap; color: var(--product-text-muted); }
+  #cc-product-{{ section.id }} .cc-product-stars {
+    display: inline-flex;
+    min-height: 48px;
+    padding: 7px 11px;
+    align-items: center;
+    border: 1px solid rgba(246,184,0,.38);
+    border-radius: 10px;
+    background: linear-gradient(135deg,#fffdf4,#fff6c9);
+    box-shadow: 0 7px 18px rgba(181,128,0,.12);
+    font-size: clamp(22px,2vw,27px);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
   #cc-product-{{ section.id }} .cc-product-stars > span {
     color: transparent;
-    background: linear-gradient(90deg, var(--product-accent) 0 var(--rating-width), var(--product-border) var(--rating-width) 100%);
+    background: linear-gradient(90deg,#F6B800 0 var(--rating-width),#E5E9EE var(--rating-width) 100%);
     background-clip: text;
     -webkit-background-clip: text;
+    filter: drop-shadow(0 2px 2px rgba(143,98,0,.18));
   }
-  #cc-product-{{ section.id }} .cc-product-rating a { color: var(--product-accent); text-decoration: none; }
-  #cc-product-{{ section.id }} .cc-product-rating strong { color: var(--product-dark); }
-  #cc-product-{{ section.id }} .cc-product-rating > strong {
-    padding: 2px 6px;
-    border-radius: 5px;
-    background: var(--product-accent-soft);
-    color: var(--product-accent);
+  #cc-product-{{ section.id }} .cc-product-metric {
+    display: grid;
+    min-width: 78px;
+    min-height: 48px;
+    padding: 6px 11px;
+    align-content: center;
+    gap: 1px;
+    border: 1px solid var(--product-border);
+    border-radius: 10px;
+    background: var(--product-card);
+    color: var(--product-dark);
+    text-decoration: none;
+    box-shadow: 0 6px 16px rgba(17,24,38,.07);
+    transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+  }
+  #cc-product-{{ section.id }} .cc-product-metric strong {
+    color: var(--product-dark);
+    font-size: 16px;
+    font-weight: 850;
+    line-height: 1.05;
+  }
+  #cc-product-{{ section.id }} .cc-product-metric small {
+    color: var(--product-text-muted);
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: .06em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+  #cc-product-{{ section.id }} .cc-product-score {
+    border-color: rgba(56,189,248,.38);
+    background: linear-gradient(135deg,#f7fdff,#dff5ff);
+  }
+  #cc-product-{{ section.id }} .cc-product-reviews:hover,
+  #cc-product-{{ section.id }} .cc-product-reviews:focus-visible {
+    border-color: var(--product-accent);
+    box-shadow: 0 9px 20px rgba(56,189,248,.18);
+    transform: translateY(-2px);
   }
   #cc-product-{{ section.id }} .cc-product-sold {
-    padding: 3px 7px;
-    border: 1px solid var(--product-accent-medium);
-    border-radius: 99px;
-    background: var(--product-accent-soft);
-    color: var(--product-dark);
-    font-weight: 700;
+    min-width: 104px;
+    border-color: rgba(246,184,0,.32);
+    background: linear-gradient(135deg,#fffdf5,#fff3bd);
   }
-  #cc-product-{{ section.id }} .cc-product-separator { color: var(--product-border); }
   #cc-product-{{ section.id }} .cc-product-purchase { margin-top: 16px; }
   #cc-product-{{ section.id }} .cc-product-promo-head { display: flex; min-height: 46px; padding: 10px 14px; align-items: center; justify-content: space-between; gap: 14px; border-radius: 7px 7px 0 0; background: var(--product-accent); color: var(--product-dark); font-size: 13px; }
   #cc-product-{{ section.id }} .cc-product-promo-head strong { font-weight: 800; }
@@ -2102,6 +2178,9 @@
   #cc-product-{{ section.id }} .cc-product-save { padding: 5px 8px; border: 1px solid rgba(56,189,248,.35); border-radius: 5px; background: rgba(56,189,248,.14); color: var(--product-dark); font-size: 13px; font-weight: 700; }
   #cc-product-{{ section.id }} .is-hidden { display: none !important; }
   #cc-product-{{ section.id }} .cc-product-extra { margin: 7px 0 0; color: var(--product-text-muted); font-size: 13px; }
+  #cc-product-{{ section.id }} .cc-product-market-price { display: flex; gap: 6px; margin: 8px 0 0; align-items: center; color: var(--product-text-muted); font-size: 11px; }
+  #cc-product-{{ section.id }} .cc-product-market-price > span { color: var(--product-accent); font-size: 15px; }
+  #cc-product-{{ section.id }} .cc-product-market-price strong { color: var(--product-dark); font-weight: 750; }
   #cc-product-{{ section.id }} .cc-product-coupon { margin-top: 10px; border: 1px solid rgba(56,189,248,.25); border-radius: 7px; background: var(--product-accent-soft); }
   #cc-product-{{ section.id }} .cc-product-coupon summary { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; padding: 11px 12px; align-items: center; color: var(--product-dark); cursor: pointer; list-style: none; }
   #cc-product-{{ section.id }} .cc-product-coupon summary > span { color: var(--product-accent); }
@@ -2210,15 +2289,18 @@
     #cc-product-{{ section.id }} .cc-product-layout { display: flex; flex-direction: column; gap: 12px; }
     #cc-product-{{ section.id }} .cc-product-info { display: contents; }
     #cc-product-{{ section.id }} .cc-product-heading { order: 1; padding: 15px; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
-    #cc-product-{{ section.id }} .cc-product-gallery { order: 2; display: flex; padding: 12px; flex-direction: column-reverse; gap: 8px; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
+    #cc-product-{{ section.id }} .cc-product-gallery { order: 2; display: flex; padding: 0; flex-direction: column-reverse; gap: 0; overflow: hidden; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
     #cc-product-{{ section.id }} .cc-product-purchase { order: 3; margin: 0; padding: 14px; border: 1px solid var(--product-border); border-radius: 10px; background: var(--product-card); }
     #cc-product-{{ section.id }} .cc-product-heading h2 { font-size: 18px; }
-    #cc-product-{{ section.id }} .cc-product-rating { font-size: 13px; }
-    #cc-product-{{ section.id }} .cc-product-thumbnails { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; }
+    #cc-product-{{ section.id }} .cc-product-rating { gap: 7px; }
+    #cc-product-{{ section.id }} .cc-product-stars { min-height: 44px; padding: 6px 9px; font-size: 21px; letter-spacing: 1px; }
+    #cc-product-{{ section.id }} .cc-product-metric { min-width: 70px; min-height: 44px; padding: 5px 9px; }
+    #cc-product-{{ section.id }} .cc-product-sold { min-width: 96px; }
+    #cc-product-{{ section.id }} .cc-product-thumbnails { padding: 10px 12px 12px; flex-direction: row; max-height: none; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x proximity; scrollbar-width: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnails::-webkit-scrollbar { display: none; }
     #cc-product-{{ section.id }} .cc-product-thumbnail { flex-basis: 58px; width: 58px; height: 58px; scroll-snap-align: start; }
-    #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; }
-    #cc-product-{{ section.id }} .cc-product-media { padding: 10px; }
+    #cc-product-{{ section.id }} .cc-product-media-stage { width: 100%; border-radius: 9px 9px 0 0; }
+    #cc-product-{{ section.id }} .cc-product-media { padding: 0; }
     #cc-product-{{ section.id }} .cc-product-current-price { font-size: 34px; }
     #cc-product-{{ section.id }} .cc-product-promo-head { align-items: flex-start; flex-wrap: wrap; }
     #cc-product-{{ section.id }} .cc-product-option-values { flex-wrap: nowrap; overflow-x: auto; padding: 2px 8px 8px 2px; scrollbar-width: none; }

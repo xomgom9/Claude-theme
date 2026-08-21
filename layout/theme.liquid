@@ -23,6 +23,11 @@
     {%- render 'stylesheets' -%}
     {%- render 'fonts' -%}
     {%- render 'scripts' -%}
+    <script
+      src="{{ 'car-comfort-fixes.js' | asset_url }}"
+      type="module"
+      fetchpriority="low"
+    ></script>
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
 

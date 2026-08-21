@@ -23,6 +23,16 @@
     {%- render 'stylesheets' -%}
     {%- render 'fonts' -%}
     {%- render 'scripts' -%}
+    <link
+      rel="stylesheet"
+      href="{{ 'car-comfort-mobile.css' | asset_url }}"
+      media="(max-width: 749px)"
+    >
+    <script
+      src="{{ 'car-comfort-fixes.js' | asset_url }}"
+      type="module"
+      fetchpriority="low"
+    ></script>
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
 

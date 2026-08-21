@@ -136,11 +136,29 @@
       <div class="cc-heading"><p class="cc-eyebrow">THE DAILY DRIVE</p><h2 id="pain-title">Still Feeling Sore After Driving?</h2><p>Long hours behind the wheel can leave your neck, shoulders, and back feeling worn out.</p></div>
       <div class="cc-pain-grid">
         <article class="cc-media-card">
-          <div class="cc-card-media">{% if section.settings.pain_image_1 != blank %}{{ section.settings.pain_image_1 | image_url: width: 900 | image_tag: widths: '400, 700, 900', loading: 'lazy', alt: section.settings.pain_image_1.alt }}{% else %}<img src="{{ 'shoulder-back-strain.jpg' | asset_url }}" width="900" height="600" loading="lazy" alt="Driver experiencing shoulder and back strain">{% endif %}</div>
+          <div class="cc-card-media">
+            <picture class="cc-card-picture">
+              <source media="(max-width: 749px)" srcset="{{ 'shoulder-back-strain-mobile.jpg' | asset_url }}">
+              {% if section.settings.pain_image_1 != blank %}
+                {{ section.settings.pain_image_1 | image_url: width: 900 | image_tag: class: 'cc-pain-image', widths: '400, 700, 900', loading: 'lazy', alt: section.settings.pain_image_1.alt }}
+              {% else %}
+                <img class="cc-pain-image" src="{{ 'shoulder-back-strain.jpg' | asset_url }}" width="900" height="600" loading="lazy" alt="Driver experiencing shoulder and back strain">
+              {% endif %}
+            </picture>
+          </div>
           <div class="cc-card-copy"><span class="cc-icon"><img src="{{ 'shoulder-back-strain.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><h3>Shoulder &amp; Back Strain</h3><p>Tension builds up during long hours behind the wheel.</p></div>
         </article>
         <article class="cc-media-card">
-          <div class="cc-card-media">{% if section.settings.pain_image_2 != blank %}{{ section.settings.pain_image_2 | image_url: width: 900 | image_tag: widths: '400, 700, 900', loading: 'lazy', alt: section.settings.pain_image_2.alt }}{% else %}<img src="{{ 'neck-pain-stiffness.jpg' | asset_url }}" width="900" height="600" loading="lazy" alt="Driver experiencing neck pain and stiffness">{% endif %}</div>
+          <div class="cc-card-media">
+            <picture class="cc-card-picture">
+              <source media="(max-width: 749px)" srcset="{{ 'neck-pain-stiffness-mobile.jpg' | asset_url }}">
+              {% if section.settings.pain_image_2 != blank %}
+                {{ section.settings.pain_image_2 | image_url: width: 900 | image_tag: class: 'cc-pain-image', widths: '400, 700, 900', loading: 'lazy', alt: section.settings.pain_image_2.alt }}
+              {% else %}
+                <img class="cc-pain-image" src="{{ 'neck-pain-stiffness.jpg' | asset_url }}" width="900" height="600" loading="lazy" alt="Driver experiencing neck pain and stiffness">
+              {% endif %}
+            </picture>
+          </div>
           <div class="cc-card-copy"><span class="cc-icon"><img src="{{ 'neck-pain-stiffness.png' | asset_url }}" width="1200" height="1200" loading="lazy" alt=""></span><h3>Neck Pain &amp; Stiffness</h3><p>Lack of support puts extra strain on your neck.</p></div>
         </article>
         <article class="cc-video-card">
@@ -162,7 +180,13 @@
         <div class="cc-heading"><p class="cc-eyebrow">360° COMFORT</p><h2>Soft Support From Every Angle</h2><p>3D contouring fills the gap behind your neck, cradling both sides for steady, balanced support.</p></div>
         <div class="cc-contour">
           <div class="cc-callouts"><div><b>Ergonomic 3D Contour</b><span>Cradles your neck and supports both sides.</span><span class="cc-meter" role="progressbar" aria-label="Ergonomic contour" aria-valuemin="0" aria-valuemax="100" aria-valuenow="94"><i style="--cc-progress:94%"></i></span></div><div><b>Premium Memory Foam</b><span>Slow rebound adapts gently to your shape.</span><span class="cc-meter" role="progressbar" aria-label="Memory foam comfort" aria-valuemin="0" aria-valuemax="100" aria-valuenow="92"><i style="--cc-progress:92%"></i></span></div></div>
-          <div class="cc-product-stage">{% if section.settings.contour_image != blank %}{{ section.settings.contour_image | image_url: width: 1400 | image_tag: widths: '600, 900, 1200, 1400', loading: 'lazy', alt: section.settings.contour_image.alt }}{% elsif product_image != blank %}{{ product_image | image_url: width: 1400 | image_tag: widths: '600, 900, 1200, 1400', loading: 'lazy', alt: offer_product.title }}{% else %}<img src="{{ 'variant product 7.jpeg' | asset_url }}" width="800" height="800" loading="lazy" alt="Black neck pillow and lumbar support set">{% endif %}</div>
+          <div class="cc-product-stage">
+            {% if section.settings.contour_image != blank %}
+              {{ section.settings.contour_image | image_url: width: 1900 | image_tag: widths: '600, 900, 1200, 1600, 1900', loading: 'lazy', alt: section.settings.contour_image.alt }}
+            {% else %}
+              <img src="{{ 'soft-support-every-angle.jpg' | asset_url }}" width="1899" height="828" loading="lazy" alt="Neck and lumbar support shown from every angle">
+            {% endif %}
+          </div>
           <div class="cc-callouts cc-callouts-right"><div><b>Lumbar Support Curve</b><span>Supports the natural curve of your lower back.</span><span class="cc-meter" role="progressbar" aria-label="Lumbar support" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"><i style="--cc-progress:90%"></i></span></div><div><b>Adjustable Straps</b><span>Helps keep the cushion securely in place.</span><span class="cc-meter" role="progressbar" aria-label="Strap adjustability" aria-valuemin="0" aria-valuemax="100" aria-valuenow="96"><i style="--cc-progress:96%"></i></span></div></div>
         </div>
       </div>
@@ -1664,10 +1688,15 @@
     min-height: 0;
     overflow: hidden;
   }
-  .cc-landing .cc-pain-grid .cc-card-media > img,
+  .cc-landing .cc-pain-grid .cc-card-picture,
+  .cc-landing .cc-pain-grid .cc-pain-image,
   .cc-landing .cc-pain-grid .cc-card-media > svg {
+    display: block;
     width: 100%;
     height: 100%;
+  }
+  .cc-landing .cc-pain-grid .cc-pain-image,
+  .cc-landing .cc-pain-grid .cc-card-media > svg {
     object-fit: cover;
     transition: transform .5s cubic-bezier(.22,1,.36,1);
   }
@@ -1715,7 +1744,7 @@
     .cc-landing .cc-inline-instant-grid article:hover .cc-inline-instant-media > svg {
       transform: scale(1.045);
     }
-    .cc-landing .cc-pain-grid .cc-media-card:hover .cc-card-media > img,
+    .cc-landing .cc-pain-grid .cc-media-card:hover .cc-pain-image,
     .cc-landing .cc-pain-grid .cc-media-card:hover .cc-card-media > svg {
       transform: scale(1.055);
     }
@@ -2536,9 +2565,53 @@
     display: none !important;
   }
   @media (max-width: 749px) {
+    .cc-landing .cc-pain-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+    .cc-landing .cc-pain-grid .cc-media-card,
     .cc-landing .cc-pain-grid .cc-video-card {
-      grid-column: 1 / -1;
+      grid-column: 1;
+      max-width: none;
+      margin-inline: 0;
+    }
+    .cc-landing .cc-pain-grid .cc-media-card {
+      aspect-ratio: 16 / 9;
+    }
+    .cc-landing .cc-pain-grid .cc-video-card {
       aspect-ratio: 4 / 5;
+    }
+    .cc-landing .cc-pain-grid .cc-media-card::after {
+      inset: 28% 0 0;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy {
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 6px 10px;
+      padding: 16px;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy .cc-icon {
+      width: 40px;
+      height: 40px;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy h3 {
+      font-size: 1.05rem;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy p {
+      font-size: .84rem;
+      line-height: 1.35;
+    }
+    .cc-landing .cc-soft .cc-product-stage {
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 1899 / 828;
+    }
+  }
+  @media (max-width: 390px) {
+    .cc-landing .cc-pain-grid .cc-card-copy {
+      padding: 14px;
+    }
+    .cc-landing .cc-pain-grid .cc-card-copy p {
+      font-size: .78rem;
     }
   }
 
